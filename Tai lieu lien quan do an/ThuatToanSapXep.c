@@ -1,6 +1,6 @@
 #include<stdio.h>
 
-// Hàm FIFO
+// Ham FIFO
 void FIFO(int n, int frame, int *a, int *frames)
 {
 	for (int i = 0; i<frame; i++)
