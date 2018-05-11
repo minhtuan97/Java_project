@@ -7,9 +7,12 @@ package doanjava;
 import javax.swing.JTable;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -82,19 +85,19 @@ public class MainFrame extends JFrame
     
     private JList<String> lsCode;
     
-    private JMenuBar mb1;
+    private JMenuBar mbMain;
     
     private JSpinner jsp1;
     
     private JSlider slSize;
     // thanh cuon khung code
-    private JScrollPane pnScroll; 
+    private JScrollPane pnScrollMain,pnScrollCode; 
     
     private JRadioButton rdFIFO, rdOPT, rdLRU;
    
-    private JToolBar tb1,tb2,tb3; 
+    private JToolBar tbMain; 
     
-    private JPanel pn1,pn2,pn3,pn4,pn5,pnCode;
+    private JPanel pn1,pn2,pn3,pn4,pn5,pnCode,pnTrangThai;
     
     // su kien su ly cac radio button
     private ActionListener eInterchangeSort, eSelectionSort;
@@ -150,7 +153,7 @@ public class MainFrame extends JFrame
     // Thanh menu
     private void CreateMenu()
     {
-        mb1 = new JMenuBar();
+        mbMain = new JMenuBar();
         
         JMenu menuFile = new JMenu("File");
         JMenuItem news = new JMenuItem("New");
@@ -183,25 +186,30 @@ public class MainFrame extends JFrame
         menuAbout.add(checkupdate);
         menuAbout.add(fellback);
         
-        mb1.add(menuFile);
-        mb1.add(menuEdit);
-        mb1.add(menuHelp);
-        mb1.add(menuAbout);
+        info.addActionListener( new ActionListener() { public void actionPerformed(ActionEvent actionEvent) { InfoFrame f1 = new InfoFrame();
+        f1.setVisible(true);
+        } } );
+        mbMain.add(menuFile);
+        mbMain.add(menuEdit);
+        mbMain.add(menuHelp);
+        mbMain.add(menuAbout);
         
-        setJMenuBar(mb1);
+        setJMenuBar(mbMain);
         
     }
     
     // Thanh công cụ
     private void CreateToolbar()
     {
-        tb1 = new JToolBar();
+        tbMain = new JToolBar();
         // Kéo thả thanh toolbar
-        tb1.setFloatable(false);
+        tbMain.setFloatable(false);
         // Đặt màu nền
-        tb1.setBackground(Color.white);
+        tbMain.setBackground(Color.white);
         
-        tb1.setBorder(BorderFactory.createLineBorder(Color.PINK));
+        tbMain.setLayout(new FlowLayout(0, 0, 0));
+        
+        tbMain.setBorder(BorderFactory.createLineBorder(Color.PINK));
         //tb1.setLayout(new FlowLayout());
         //ImageIcon exitIcon = new ImageIcon("2.jpeg");
         ImageIcon Icon1 = new ImageIcon(new ImageIcon("icon/play-sign.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
@@ -237,11 +245,12 @@ public class MainFrame extends JFrame
         
         JButton Button5 = new JButton("Nhập dữ liệu");
         
+        Button5.addActionListener( new ActionListener() { public void actionPerformed(ActionEvent actionEvent) { InputFrame f2 = new InputFrame();
+        f2.setVisible(true);
+        } } );
+        
         JButton Button6 = new JButton("Nhập bằng file");
         
-        JButton Button7 = new JButton("");
-        
-        JButton Button8 = new JButton("");
         
         
         lb5 = new JLabel("  Tốc độ: ");
@@ -253,27 +262,27 @@ public class MainFrame extends JFrame
                 5, //maximum value  
                 0.5); //step  
         JSpinner spinner = new JSpinner(value); 
-        spinner.setSize(50, 20);
-        spinner.setPreferredSize(new Dimension(50, 20));
+        //spinner.setSize(50, 30);
+        spinner.setPreferredSize(new Dimension(50, 30));
         //spinner.setSize(50,40);
         //spinner.setBounds(100,100,50,30);    
          
         
-        tb1.add(btPlay);
-        tb1.add(btPause);
-        tb1.add(Button3);
-        tb1.add(Button4);
-        tb1.add(Button5);
-        tb1.add(Button6);
-        tb1.add(lb5);
-        tb1.add(spinner);
+        tbMain.add(btPlay);
+        tbMain.add(btPause);
+        tbMain.add(Button3);
+        tbMain.add(Button4);
+        tbMain.add(Button5);
+        tbMain.add(Button6);
+        tbMain.add(lb5);
+        tbMain.add(spinner);
                 
 
         
         
         
-        tb1.setSize(800, 400);
-        add(tb1,BorderLayout.NORTH);
+        tbMain.setSize(800, 400);
+        add(tbMain,BorderLayout.NORTH);
     }
     
     // Pannel Mô phỏng thuật giải
@@ -356,66 +365,66 @@ public class MainFrame extends JFrame
         pnCode.setBackground(Color.white);   
         pnCode.setForeground(cl1);
         pnCode.setPreferredSize(new Dimension(380, 650));
-        lb3 = new JLabel("Độ thu phóng: "); 
-        lb3.setBounds(10, 20, 150, 23);
-        lb9 = new JLabel("10 pixel"); 
-        lb9.setBounds(290, 20, 150, 23);
-        pnCode.add(lb3);
-        pnCode.add(lb9);
-        JSlider slider1 = new JSlider(JSlider.HORIZONTAL, 8, 20, 10);
+        JLabel lb1 = new JLabel("Độ thu phóng: "); 
+        lb1.setBounds(10, 20, 150, 23);
+        JLabel lb2 = new JLabel("10 pixel"); 
+        lb2.setBounds(290, 20, 150, 23);
+        pnCode.add(lb1);
+        pnCode.add(lb2);
+        JSlider sliderCode = new JSlider(JSlider.HORIZONTAL, 8, 20, 10);
         //slider1.setMajorTickSpacing(10);
         //slider1.setMinorTickSpacing(1);
         //slider1.setPaintTicks(true);
         //slider1.setPaintLabels(true);
-        slider1.setBounds(120, 20, 150, 23);
-        slider1.setBackground(Color.WHITE);
-        pnCode.add(slider1);
-        slider1.addChangeListener(new javax.swing.event.ChangeListener() {
+        sliderCode.setBounds(120, 20, 150, 23);
+        sliderCode.setBackground(Color.WHITE);
+        pnCode.add(sliderCode);
+        
+        sliderCode.addChangeListener(new javax.swing.event.ChangeListener() {
          public void stateChanged(ChangeEvent e) {
             lsCode.setFont(new Font("Monospaced",Font.BOLD,((JSlider)e.getSource()).getValue()));
-            lb9.setText(((JSlider)e.getSource()).getValue() +" pixels");
+            lb2.setText(((JSlider)e.getSource()).getValue() +" pixels");
          }
       });
         
 
         add(pnCode,BorderLayout.CENTER);
         
-        pnScroll = new JScrollPane();
-	pnScroll.setBounds(10, 50, 350, 530); // default 10, 53, 486, 223
-	pnCode.add(pnScroll);
+        pnScrollCode = new JScrollPane();
+	pnScrollCode.setBounds(10, 50, 350, 530); // default 10, 53, 486, 223
+	pnCode.add(pnScrollCode);
 	model = new DefaultListModel<>();
 	lsCode = new JList<String>(model);
-	lsCode.setBorder(new LineBorder(new Color(0, 0, 0)));
+	lsCode.setBorder(new LineBorder(Color.cyan));
 	lsCode.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	lsCode.setFont(new Font("Monospaced",Font.BOLD,11));
-	pnScroll.setViewportView(lsCode);
-        //pnScroll.setBounds(10, 40, 360, 600);
-        model.removeAllElements();
-        addFIFOcode();
-	lsCode.setSelectedIndex(0);
-    
-        lsCode.ensureIndexIsVisible(lsCode.getSelectedIndex());
+	pnScrollCode.setViewportView(lsCode);
         
+        model.removeAllElements();
+        addFIFOcode();    
+        lsCode.ensureIndexIsVisible(lsCode.getSelectedIndex());    
                          
     }
     
     // Thanh trạng thái của ứng dụng
     private void CreatePannelStatus()
     {
-        pn2 = new JPanel();
-        pn2.setBackground(Color.WHITE);
-        pn2.setBorder(BorderFactory.createLineBorder(Color.red));
-        pn2.setSize(800, 100);
+        pnTrangThai = new JPanel();
+        pnTrangThai.setBackground(Color.WHITE);
+        pnTrangThai.setBorder(BorderFactory.createLineBorder(Color.red));
+        pnTrangThai.setSize(800, 100);
         lb1 = new JLabel("thanh trang thai");
         lb1.setSize(800,50);
         //Bt1.setPreferredSize(new Dimension(200,50));
-        pn2.add(lb1);
-        add(pn2,BorderLayout.SOUTH);
+        pnTrangThai.add(lb1);
+        add(pnTrangThai,BorderLayout.SOUTH);
     }
      
     // constructor cua lop MainFrame
     public MainFrame()
     {
+        // thiet lap kieu chay chuong trinh
+	setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
         // khởi tạo frame
         // Đặt Tiêu đề cho frame
         setTitle("Đồ Án Java");
@@ -446,6 +455,8 @@ public class MainFrame extends JFrame
         //setMinimumSize(new Dimension(300, 300));
         //
         //pack();
+        
+        // khong thay doi kich thuoc
         setResizable(false);
         
         // tạo thanh menu
@@ -454,15 +465,12 @@ public class MainFrame extends JFrame
         CreateToolbar();  
         // thêm Pannel chính hiển thị đồ họa
         CreatePannelMain();
-        // thêm thanh trạng thái
-        CreatePannelStatus();
         // tạo pannel hiển thị code
         CreatePannelCode();
-        
-        //pack();
-        
-        
+        // thêm thanh trạng thái
+        CreatePannelStatus(); 
     }
+    
     public static void main(String[] args)
     {
         
@@ -575,18 +583,157 @@ public class MainFrame extends JFrame
     }
     public void addOPTcode()
     {
+        model.addElement("void OTP(int n, int frame, int *a, int *frames)");
+        model.addElement("for (int i = 1; i <= frame; i++)");
+        model.addElement("frames[i] = -1;");
+        model.addElement("int i, j, available, count = 0;");
+        model.addElement("printf( \" Chuoi\\t|Khung trang\");");
+        model.addElement("for (int k = 0; k<frame - 1; k++)");
+        model.addElement("printf( \"\\t\");");
+        model.addElement("printf( \"|\\n\");");
+        model.addElement("for (i = 1; i <= n; i++)");
+        model.addElement("{");
+        model.addElement("printf( \" %d\\t\",a[i]);");
+        model.addElement("available = 0;");
+        model.addElement("for (int k = 1; k <= frame; k++)");
+        model.addElement("if (frames[k] == a[i])");
+        model.addElement("available = 1;");
+        model.addElement("if (available == 0)");
+        model.addElement("{");
+        model.addElement("int j = TimViTriLRU(i, n, frame, a, frames);");
+        model.addElement("frames[j] = a[i];");
+        model.addElement("count++;");
+        model.addElement("printf( \"|\");");
+        model.addElement("for (int k = 1; k <= frame; k++)");
+        model.addElement("printf( \"%d\\t\",frames[k]);");
+        model.addElement("printf( \"| F\");");
+        model.addElement("}");
+        model.addElement("else");
+        model.addElement("{");
+        model.addElement("printf( \"|\");");
+        model.addElement("for (k = 1; k <= frame; k++)");
+        model.addElement("printf( \"%d\\t\",frames[k]);");
+        model.addElement("printf( \"|\");");
+        model.addElement("}");
+        model.addElement("printf( \"So trang loi la: %d\\n\",count);");
+        model.addElement("}");
         model.addElement("");
+        model.addElement("int TimViTriLRU(int i, int n, int frame, int *a, int *frames)");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        
+        
     }  
     public void addLRUcode()
     {
         model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
+        model.addElement("");
     }  
-                
-                
-                
-                
-                
-                
                 
                 
 }
