@@ -337,6 +337,8 @@ public class MainFrame extends JFrame
         pn1.add(tb1);
         
         
+       
+        
         
         
         // setPreferredSize() thiết lập lại kích thước đối tượng, không chịu ảnh hưởng của Layout bên ngoài
@@ -346,6 +348,8 @@ public class MainFrame extends JFrame
         pn4 = new JPanel();
         pn4.setBackground(Color.WHITE);
         lb6 = new JLabel("Định thì CPU"); 
+        lb6.setBackground(Color.GRAY);
+        lb6.setOpaque(true);
         pn4.add(lb6);
               
         // setPreferredSize() thiết lập lại kích thước đối tượng, không chịu ảnh hưởng của Layout bên ngoài
@@ -414,6 +418,7 @@ public class MainFrame extends JFrame
         pnTrangThai.setBorder(BorderFactory.createLineBorder(Color.red));
         pnTrangThai.setSize(800, 100);
         lb1 = new JLabel("thanh trang thai");
+        lb1.setBackground(Color.YELLOW);
         lb1.setSize(800,50);
         //Bt1.setPreferredSize(new Dimension(200,50));
         pnTrangThai.add(lb1);
