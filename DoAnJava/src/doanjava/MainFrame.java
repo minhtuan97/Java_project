@@ -42,6 +42,7 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -112,7 +113,8 @@ public class MainFrame extends JFrame
     // mang int luu cac phan tu o nho
     private int[] array;
     // mang int luu cac phan tu frame
-    private int[] frame;
+    private int[] frames;
+    private int frame;
 
     // mang cac threads
     private Thread[] threads = new Thread[1000000];
@@ -216,12 +218,18 @@ public class MainFrame extends JFrame
         btPlay = new JButton(Icon1);
         btPlay.setBorder(new EmptyBorder(7, 7, 7, 7));
         btPlay.setText("Play");
-//        btPlay.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				//deleteArrays();
-//				//setState(0);
-//			}
-//		});
+        btPlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//deleteArrays();
+				//setState(0);
+                                num=20;
+                                frame=4;
+                                array= new int[num];
+                                frames= new int[frame];
+                                lbArrays= new JLabel[num*(frame+1)];
+                                FIFO();
+			}
+		});
         
         ImageIcon Icon2 = new ImageIcon(new ImageIcon("icon/pause-symbol.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btPause = new JButton(Icon2);
@@ -332,9 +340,9 @@ public class MainFrame extends JFrame
  
         Object[][] objects = new Object[5][5];
         
-        JTable tb1 = new JTable();
-        tb1.setBounds(20, 60, 400, 300);
-        pn1.add(tb1);
+//        JTable tb1 = new JTable();
+//        tb1.setBounds(20, 60, 400, 300);
+//        pn1.add(tb1);
         
         
         
@@ -733,7 +741,90 @@ public class MainFrame extends JFrame
         model.addElement("");
         model.addElement("");
         model.addElement("");
-    }  
+    } 
+    public void FIFO()
+     {
+        
+        int intx=450-42*(num/2);
+        String str;
+        for(int i=0; i<lbArrays.length; i++)
+         {
+             lbArrays[i]= new JLabel();
+             lbArrays[i].setBounds(intx+42*(i%num), 50+42*(i/num), 40, 40);
+             lbArrays[i].setHorizontalAlignment(SwingConstants.CENTER);
+             lbArrays[i].setVerticalAlignment(SwingConstants.CENTER);
+
+             lbArrays[i].setBackground(Color.WHITE);
+             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.black));
+             lbArrays[i].setOpaque(true);
+             pn1.add(lbArrays[i]);
+             pn1.repaint();
+         }
+        for(int i=0;i<num;i++)
+        {
+            lbArrays[i].setText(""+array[i]);
+            lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        }
+        for(int i=num*frame; i<lbArrays.length; i++)
+        {
+            lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.blue));
+        }
+     
+       // MoveLabel(lbArrays[2],lbArrays[2+num*1]);
+        
+        //lbArrays[2].setLocation(lbArrays[2].getX(), lbArrays[2].getY()+20);
+        //pn1.repaint();
+//        while(lbArrays[2].getY()<50)
+//         {
+//             //y1=y1+7;
+//             lb1.setLocation(lb1.getX(), y1);
+//             pn1.repaint();
+//         }
+        
+        for (int i = 0; i<frame; i++)
+		frames[i] = -1;
+
+	int i, j = 0, k, available, count = 0;
+        
+        System.out.println("Chuoi \t|Khung trang");
+	for (k = 0; k < frame - 1; k++)
+		System.out.print("\t");
+        System.out.print( "|\n");
+
+	for (i = 0; i < num; i++)
+	{
+            System.out.print(" "+array[i]+"\t");
+		available = 0;
+                
+                //so sanh
+		for (k = 0; k<frame; k++)
+			if (frames[k] == array[i])
+				available = 1; 
+
+		if (available == 0) 
+		{
+			frames[j] = array[i];
+			j = (j + 1) % frame;
+			count++;
+			System.out.print( "|");
+
+			for (k = 0; k < frame; k++)
+				System.out.print(frames[k]+"\t");
+			System.out.print( "| F");
+		}
+		else
+		{
+			System.out.print( "|");
+			for (k = 0; k < frame; k++)
+				System.out.print(frames[k]+"\t");
+			System.out.print( "|");
+		}
+		System.out.print( "\n");
+	}
+	System.out.print( "So trang loi la: "+count+"\n");
+         
+     }
+
                 
                 
 }
