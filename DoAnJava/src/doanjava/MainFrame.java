@@ -12,10 +12,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.util.Random;
 import javafx.beans.value.ChangeListener;
 import javax.imageio.ImageIO;
@@ -121,7 +123,7 @@ public class MainFrame extends JFrame
     // vi tri thread hien tai
     private int curT = -1;
     // thoi gian nghi, thuc thi
-    private int time = 50;
+    private int time = 30;
     // bien luu buoc thuc hien
     private int step = 0;	
     
@@ -147,6 +149,7 @@ public class MainFrame extends JFrame
     private final Color cl5 = new Color(20, 150, 255);
     private final Color cl6 = new Color(200, 15, 255);
     private final Color cl7 = new Color(200, 150, 150);
+    private Color processingColor = new Color(255, 153, 153);
     
    
     
@@ -222,11 +225,23 @@ public class MainFrame extends JFrame
 			public void actionPerformed(ActionEvent e) {
 				//deleteArrays();
 				//setState(0);
-                                num=20;
-                                frame=4;
+                                num=12;
+                                frame=3;
                                 array= new int[num];
+                                array[0]=1;
+                                array[1]=2;
+                                array[2]=3;
+                                array[3]=4;
+                                array[4]=1;
+                                array[5]=2;
+                                array[6]=5;
+                                array[7]=1;
+                                array[8]=2;
+                                array[9]=3;
+                                array[10]=4;
+                                array[11]=5;
                                 frames= new int[frame];
-                                lbArrays= new JLabel[num*(frame+1)];
+                                lbArrays= new JLabel[num*(frame+2)];
                                 FIFO();
 			}
 		});
@@ -770,61 +785,198 @@ public class MainFrame extends JFrame
             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.blue));
         }
      
-       // MoveLabel(lbArrays[2],lbArrays[2+num*1]);
+       
         
-        //lbArrays[2].setLocation(lbArrays[2].getX(), lbArrays[2].getY()+20);
-        //pn1.repaint();
-//        while(lbArrays[2].getY()<50)
-//         {
-//             //y1=y1+7;
-//             lb1.setLocation(lb1.getX(), y1);
-//             pn1.repaint();
-//         }
         
         for (int i = 0; i<frame; i++)
 		frames[i] = -1;
-
+        for(int i=0;i<frame;i++)
+        {
+            lbArrays[num*(i+1)].setText(""+frames[i]);
+        }
 	int i, j = 0, k, available, count = 0;
-        
-        System.out.println("Chuoi \t|Khung trang");
-	for (k = 0; k < frame - 1; k++)
-		System.out.print("\t");
-        System.out.print( "|\n");
 
 	for (i = 0; i < num; i++)
 	{
-            System.out.print(" "+array[i]+"\t");
-		available = 0;
-                
+		available = 0; 
                 //so sanh
+                
 		for (k = 0; k<frame; k++)
 			if (frames[k] == array[i])
-				available = 1; 
+                        {
+                            Move(lbArrays[i],lbArrays[i+num*k]);
+                            available = 1; 
+                            break;
+                        }
+
 
 		if (available == 0) 
 		{
+                        SetValue(lbArrays[i+num*1],frames[0]);
+                        SetValue(lbArrays[i+num*2],frames[1]);
+                        SetValue(lbArrays[i+num*3],frames[2]);
+                        frames[j]=array[i];
 			frames[j] = array[i];
+                        Move(lbArrays[i],lbArrays[i+num*frame]);
+                        SetF(lbArrays[i+num*(frame+1)]);
+                        LightLabel(lbArrays[i+num*(j+1)]);
+                        Move(lbArrays[i],lbArrays[i+num*(j+1)]);
+                        LightLabel(lbArrays[i]);
+                        SetValue(lbArrays[i],array[i]);
+                        
+                                
 			j = (j + 1) % frame;
+                        
 			count++;
-			System.out.print( "|");
-
-			for (k = 0; k < frame; k++)
-				System.out.print(frames[k]+"\t");
-			System.out.print( "| F");
 		}
 		else
 		{
-			System.out.print( "|");
-			for (k = 0; k < frame; k++)
-				System.out.print(frames[k]+"\t");
-			System.out.print( "|");
+                    SetValue(lbArrays[i+num*1],frames[0]);
+                    SetValue(lbArrays[i+num*2],frames[1]);
+                    SetValue(lbArrays[i+num*3],frames[2]);
+                    Move(lbArrays[i],lbArrays[i+num*(k+1)]);
+                    SetT(lbArrays[i+num*(frame+1)]);
 		}
-		System.out.print( "\n");
 	}
 	System.out.print( "So trang loi la: "+count+"\n");
          
      }
-
-                
+	public void Move(JLabel lb1, JLabel lb2) {
+		curT ++;
+		int cur = curT;
+		threads[cur] = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+		    	try {
+		    		if (cur != 0) {
+			    		threads[cur-1].join();
+			    	}
+                                if(lb1.getY()<lb2.getY())
+                                    while (lb1.getY() < lb2.getY()) {
+                                        lb2.setOpaque(false);
+			        	lb1.setLocation(lb1.getX(), lb1.getY() + 1);
+			        	Thread.sleep(time);
+			        }
+                                if(lb1.getY()>lb2.getY())
+                                    while (lb1.getY() > lb2.getY()) {
+                                        lb2.setOpaque(false);
+			        	lb1.setLocation(lb1.getX(), lb1.getY() - 1);
+			        	Thread.sleep(time);
+			        }
+                                Thread.sleep(3*time);
+                                lb1.setLocation(lb2.getX(), lb2.getY());
+		    	} catch (Exception e) {
+		    	}
+		    }
+		});
+		threads[cur].start();
+	}
+        public void LightLabel(JLabel lb)
+        {
+            curT++;
+		
+		int cur = curT;
+		threads[cur] = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+		    	try {
+		    		if (cur != 0) {
+			    		threads[cur-1].join();
+			    	}
+		    		lb.setBackground(Color.RED);
+		    		Thread.sleep(3*time);
+		    	} catch (Exception e) {
+		    		
+		    	}
+		    }
+		});
+		threads[cur].start();
+        }
+        public void SetF(JLabel lb)
+        {
+            curT++;
+		
+		int cur = curT;
+		threads[cur] = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+		    	try {
+		    		if (cur != 0) {
+			    		threads[cur-1].join();
+			    	}
+		    		lb.setText("F");
+		    		Thread.sleep(2*time);
+		    	} catch (Exception e) {
+		    		
+		    	}
+		    }
+		});
+		threads[cur].start();
+        }
+        public void SetT(JLabel lb)
+        {
+            curT++;
+		
+		int cur = curT;
+		threads[cur] = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+		    	try {
+		    		if (cur != 0) {
+			    		threads[cur-1].join();
+			    	}
+		    		lb.setText("T");
+		    		Thread.sleep(time);
+		    	} catch (Exception e) {
+		    		
+		    	}
+		    }
+		});
+		threads[cur].start();
+        }
+            public void SetValue(JLabel lb, int x)
+        {
+            curT++;
+		
+		int cur = curT;
+		threads[cur] = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+		    	try {
+		    		if (cur != 0) {
+			    		threads[cur-1].join();
+			    	}
+		    		lb.setText(""+x);
+		    		Thread.sleep(3*time);
+		    	} catch (Exception e) {
+		    		
+		    	}
+		    }
+		});
+		threads[cur].start();
+        }         
+            public void SetLabel()
+            {
+                curT++;
+		int cur = curT;
+		threads[cur] = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+		    	try {
+		    		if (cur != 0) {
+			    		threads[cur-1].join();
+			    	}
+		    		for(int z=0;z<frame;z++)
+                                {
+                                    lbArrays[z+num*(frame)].setText(""+frames[z]);
+                                }
+		    	} catch (Exception e) {
+		    		
+		    	}
+		    }
+		});
+		threads[cur].start();
+        }
+            }
                 
 }
