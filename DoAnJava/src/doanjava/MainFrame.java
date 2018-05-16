@@ -806,7 +806,7 @@ public class MainFrame extends JFrame
             lbArrays[i].setText(""+array[i]);
             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.GREEN));
         }
-        for(int i=num*frame; i<lbArrays.length; i++)
+        for(int i=num*(frame+1); i<lbArrays.length; i++)
         {
             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.blue));
         }
