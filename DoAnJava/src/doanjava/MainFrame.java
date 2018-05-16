@@ -1003,7 +1003,5 @@ public class MainFrame extends JFrame
 		});
 		threads[cur].start();
         }
-            }
-     }               
+            }             
                 
-}
