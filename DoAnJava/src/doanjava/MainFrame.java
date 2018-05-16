@@ -114,13 +114,9 @@ public class MainFrame extends JFrame
     private Thread[] threads = new Thread[1000];
     // vi tri thread hien tai
     private int curT = -1;
-<<<<<<< HEAD
     // thoi gian nghi, thuc thi
     private int time = 30;
-=======
     // thoi gian nghi, thuc thi mili giay
-    private int time = 50;
->>>>>>> 12a9012b41f9e4e333f669e766748ca5dde18640
     // bien luu buoc thuc hien
     private int step = 0;	
     
@@ -130,7 +126,6 @@ public class MainFrame extends JFrame
     private float speed;
     
     
-<<<<<<< HEAD
     // Khai báo các màu(Color)
     private final Color cl1 = new Color(255, 153, 153);
     private final Color cl2 = new Color(20, 153, 153);
@@ -140,10 +135,7 @@ public class MainFrame extends JFrame
     private final Color cl6 = new Color(200, 15, 255);
     private final Color cl7 = new Color(200, 150, 150);
     private Color processingColor = new Color(255, 153, 153);
-=======
-        
     // # Khai báo các biến Hàm sử lý sự kiện
->>>>>>> 12a9012b41f9e4e333f669e766748ca5dde18640
     
     // su kien su ly cac radio button
     private ActionListener eInterchangeSort, eSelectionSort;
@@ -874,7 +866,6 @@ public class MainFrame extends JFrame
 	}
 	System.out.print( "So trang loi la: "+count+"\n");
          
-<<<<<<< HEAD
      }
 	public void Move(JLabel lb1, JLabel lb2) {
 		curT ++;
@@ -1013,8 +1004,6 @@ public class MainFrame extends JFrame
 		threads[cur].start();
         }
             }
-=======
      }               
->>>>>>> 12a9012b41f9e4e333f669e766748ca5dde18640
                 
 }
