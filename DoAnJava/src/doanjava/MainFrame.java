@@ -115,7 +115,7 @@ public class MainFrame extends JFrame
     // vi tri thread hien tai
     private int curT = -1;
     // thoi gian nghi, thuc thi
-    private int time = 30;
+    private int time = 10;
     // thoi gian nghi, thuc thi mili giay
     // bien luu buoc thuc hien
     private int step = 0;	
@@ -909,7 +909,7 @@ public class MainFrame extends JFrame
 		    		if (cur != 0) {
 			    		threads[cur-1].join();
 			    	}
-		    		lb.setBackground(Color.RED);
+		    		lb.setBackground(Color.YELLOW);
 		    		Thread.sleep(3*time);
 		    	} catch (Exception e) {
 		    		
