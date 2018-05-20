@@ -72,15 +72,11 @@ public class MainFrame extends JFrame
     // doi tuong luu buoc chay cac dong code
     private DefaultListModel<String> model;
     
-    private JLabel lb1,lb2,lb5,lb6;
-    
     private JList<String> lsCode;
     
     private JMenuBar MenuBar;
     
-    private JSpinner jsp1;
-    
-    private JSlider SliderThuPhongMoPhong,SliderThuPhongCode;
+    private JSlider SliderTocDoMoPhong,SliderThuPhongCode;
     // thanh cuon khung code
     private JScrollPane pnScrollCode; 
     
@@ -90,7 +86,7 @@ public class MainFrame extends JFrame
     
     JTabbedPane TabbedPane;
             
-    private JPanel PanelChiaTrang,PanelDinhThi,PanelCode,PanelTrangThai;
+    private JPanel PanelChiaTrang,PanelCode,PanelTrangThai;
     
     // mang luu cac label hien thi mo phong
     private JLabel[] lbArrays;
@@ -115,7 +111,7 @@ public class MainFrame extends JFrame
     // vi tri thread hien tai
     private int curT = -1;
     // thoi gian nghi, thuc thi
-    private int time = 10;
+    private int time = 35;
     // thoi gian nghi, thuc thi mili giay
     // bien luu buoc thuc hien
     private int step = 0;	
@@ -124,28 +120,15 @@ public class MainFrame extends JFrame
     private File file = new File ("src//array.txt");
     // bien toc do
     private float speed;
-    
-    
+        
     // Khai báo các màu(Color)
-    private final Color cl1 = new Color(255, 153, 153);
-    private final Color cl2 = new Color(20, 153, 153);
-    private final Color cl3 = new Color(20, 15, 255);
-    private final Color cl4 = new Color(20, 255, 255);
-    private final Color cl5 = new Color(20, 150, 255);
-    private final Color cl6 = new Color(200, 15, 255);
     private final Color cl7 = new Color(200, 150, 150);
-    private Color processingColor = new Color(255, 153, 153);
     // # Khai báo các biến Hàm sử lý sự kiện
     
     // su kien su ly cac radio button
     private ActionListener eInterchangeSort, eSelectionSort;
     private ActionListener nn,nm,mm;
     private ChangeListener eSize;
-    
-    // # Khai báo các màu(Color)
-     
-    //private final Color cl1 = new Color(255, 153, 153);  
-    
     
     // # Tạo Thanh MenuBar
     private void CreateMenuBar()
@@ -234,7 +217,18 @@ public class MainFrame extends JFrame
                                 array[11]=5;
                                 frames= new int[frame];
                                 lbArrays= new JLabel[num*(frame+2)];
-                                FIFO();
+                                if(rdFIFO.isSelected())
+                {
+                    FIFO();
+                }
+                if(rdOPT.isSelected())
+                {
+                    //OPT();
+                }
+                if(rdLRU.isSelected())
+                {
+                    //LRU();
+                }
 			}
 		});
         
@@ -264,24 +258,7 @@ public class MainFrame extends JFrame
         f2.setVisible(true);
         } } );
         
-        JButton Button6 = new JButton("Nhập bằng file");
-        
-        
-        
-        lb5 = new JLabel("  Tốc độ: ");
-        lb5.setPreferredSize(new Dimension(100, 30));
-        
-        
-        SpinnerModel value =  new SpinnerNumberModel(2, //initial value  
-                0, //minimum value  
-                5, //maximum value  
-                0.5); //step  
-        JSpinner spinner = new JSpinner(value); 
-        //spinner.setSize(50, 30);
-        spinner.setPreferredSize(new Dimension(50, 30));
-        //spinner.setSize(50,40);
-        //spinner.setBounds(100,100,50,30);    
-         
+        JButton Button6 = new JButton("Nhập bằng file");        
         
         ToolBar.add(btPlay);
         ToolBar.add(btPause);
@@ -289,12 +266,6 @@ public class MainFrame extends JFrame
         ToolBar.add(Button4);
         ToolBar.add(Button5);
         ToolBar.add(Button6);
-        ToolBar.add(lb5);
-        ToolBar.add(spinner);
-                
-
-        
-        
         
         ToolBar.setSize(800, 400);
         add(ToolBar,BorderLayout.NORTH);
@@ -336,32 +307,76 @@ public class MainFrame extends JFrame
         grSort.add(rdOPT);
         
         rdFIFO.setSelected(true);
+        // Sự kiện chọn radio button FIFO
+        rdFIFO.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent event) 
+            {              
+                model.removeAllElements();
+                addFIFOcode();
+            }
+        });
+        // Sự kiện chọn radio button OPT
+        rdOPT.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent event) 
+            {      
+                model.removeAllElements();
+                addOPTcode();
+            }
+        });
+        // Sự kiện chọn radio button LRU
+        rdLRU.addActionListener(new ActionListener() 
+        { 
+            @Override
+            public void actionPerformed(ActionEvent event) 
+            {    
+                model.removeAllElements();
+                addLRUcode(); 
+            }
+        });
         
-        JLabel 	lptd = new JLabel("Độ thu phóng : ");
+        JLabel 	lptd = new JLabel("Tốc độ mô phỏng: ");
         lptd.setBounds(320, 10, 120, 20);
         lptd.setBackground(Color.WHITE);
         PanelChiaTrang.add(lptd);
         
-        lb2 = new JLabel("Độ thu phóng: ");
-        PanelChiaTrang.add(lb2);
-        
-        SliderThuPhongMoPhong = new JSlider(JSlider.HORIZONTAL, 0, 100, 30); 
-        SliderThuPhongMoPhong.setBounds(480, 10, 150, 20);
-        SliderThuPhongMoPhong.setBackground(Color.WHITE);
-        PanelChiaTrang.add(SliderThuPhongMoPhong);
-        //JLabel[] label = new JLabel[5];
-        //Object[][] objects = new Object[5][5];  
-        
+        SliderTocDoMoPhong = new JSlider(JSlider.HORIZONTAL, 1, 6, 2); 
+        SliderTocDoMoPhong.setBounds(480, 10, 150, 20);
+        SliderTocDoMoPhong.setBackground(Color.WHITE);
+        // Sự kiện thay đổi thanh tốc độ mô phỏng
+        SliderTocDoMoPhong.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                switch(((JSlider) e.getSource()).getValue())
+                {
+                    case 1:
+                        time = 42;
+                        break;
+                    case 2:
+                        time = 35;
+                        break;
+                    case 3:
+                        time = 30;
+                        break;
+                    case 4:
+                        time = 22;
+                        break;
+                    case 5:
+                        time = 15;
+                        break;
+                    case 6:
+                        time = 8;
+                        break;
+                }
+            }
+        });     
+        PanelChiaTrang.add(SliderTocDoMoPhong);
         // setPreferredSize() thiết lập lại kích thước đối tượng, không chịu ảnh hưởng của Layout bên ngoài
         PanelChiaTrang.setPreferredSize(new Dimension(900, 650));
         
-        // panel dinh thi cpu
-        PanelDinhThi = new JPanel();
-        PanelDinhThi.setBackground(Color.WHITE);      
-        PanelDinhThi.setPreferredSize(new Dimension(900, 650));
-        
         TabbedPane.add("Chia trang ô nhớ", PanelChiaTrang);
-        TabbedPane.add("Định thì CPU", PanelDinhThi);
         add(TabbedPane,BorderLayout.WEST);
     }
     
@@ -397,9 +412,6 @@ public class MainFrame extends JFrame
          }
       });
         
-
-        add(PanelCode,BorderLayout.CENTER);
-        
         pnScrollCode = new JScrollPane();
 	pnScrollCode.setBounds(10, 50, 350, 530); // default 10, 53, 486, 223
 	PanelCode.add(pnScrollCode);
@@ -412,7 +424,9 @@ public class MainFrame extends JFrame
         
         model.removeAllElements();
         addFIFOcode();    
-        lsCode.ensureIndexIsVisible(lsCode.getSelectedIndex());    
+        lsCode.ensureIndexIsVisible(lsCode.getSelectedIndex()); 
+        
+        add(PanelCode,BorderLayout.CENTER);
                          
     }
     
@@ -422,12 +436,7 @@ public class MainFrame extends JFrame
         PanelTrangThai = new JPanel();
         PanelTrangThai.setBackground(Color.WHITE);
         PanelTrangThai.setBorder(BorderFactory.createLineBorder(Color.red));
-        PanelTrangThai.setSize(800, 100);
-        lb1 = new JLabel("thanh trang thai");
-        lb1.setBackground(Color.YELLOW);
-        lb1.setSize(800,50);
-        //Bt1.setPreferredSize(new Dimension(200,50));
-        PanelTrangThai.add(lb1);
+        PanelTrangThai.setPreferredSize(new Dimension(800,30));
         add(PanelTrangThai,BorderLayout.SOUTH);
     }
      
@@ -525,9 +534,7 @@ public class MainFrame extends JFrame
                         }
                     }
 		});          
-    }  
-    
-    
+    }      
     
     // Hàm sử lý trạng thái các nút
     public void DatTrangThai(int s)
@@ -557,31 +564,6 @@ public class MainFrame extends JFrame
             default:
                 //
                 ;
-        }
-    }
-    
-    // Khoi tao mang cac o nho
-    public void TaoMang()
-    {
-        //
-    }
-    
-    // xoa mang o nho
-    public void XoaMang()
-    {
-        //
-    }
-    
-    // tao mang o nho random
-    public void TaoRanDomMang(int num, int max)
-    {
-        Random rand = new Random();
-        for(int i = 0; i<num; i++)
-        {
-            int ranNum = rand.nextInt(max) + 0;
-            //lbArrays[i].setText(String.valueOf(ranNum));
-            //lbArrays[i].setForeground(Color.BLUE);
-            //array[i] = ranNum;
         }
     }
     
