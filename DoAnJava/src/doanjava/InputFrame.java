@@ -48,19 +48,6 @@ public class InputFrame extends JFrame
     private JButton btnOK,btReSet,btTaoMang;    
 
 
-    public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					InputFrame frame = new InputFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
     public InputFrame()
     {
         setTitle("Nhập dữ liệu");
@@ -206,17 +193,20 @@ public class InputFrame extends JFrame
     }
     
     // Khoi tao mang cac o nho
-    public void TaoMang() {
+    public void TaoMang() 
+    {
         //
     }
 
     // xoa mang o nho
-    public void XoaMang() {
+    public void XoaMang() 
+    {
         //
     }
 
     // tao mang o nho random
-    public void TaoRanDomMang(int num, int max) {
+    public void TaoRanDomMang(int num, int max) 
+    {
         Random rand = new Random();
         for (int i = 0; i < num; i++) {
             int ranNum = rand.nextInt(max) + 0;
