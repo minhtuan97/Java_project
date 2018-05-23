@@ -92,12 +92,16 @@ public class MainFrame extends JFrame
     private JPanel PanelChiaTrang,PanelCode,PanelTrangThai;
     // mang luu cac label hien thi mo phong
     private JLabel[] lbArrays;
+    //tao mang label hang dau
+    private JLabel[] lbArray_page;
     // label hien thi cac bien tam i
     private JLabel lbPoint1 = new JLabel();
     // label hien thi cac bien tam j
     private JLabel lbPoint2 = new JLabel();
     // label hine thi max min trong mo phong thuat toan
     private JLabel lbPointM = new JLabel();
+    //button hien thi loi trang
+    private JButton btnLoiTrang= new JButton();
      
     // # Khai báo các biến trong chương trình
     
@@ -116,6 +120,8 @@ public class MainFrame extends JFrame
     private int curT = -1;
     // thoi gian nghi, thuc thi mili giay
     private int time = 35;
+    //ket qua loi trang
+    int count;
     // trạng thái pause
     private int Pause = 1;        
     // Khai báo các màu(Color)
@@ -272,10 +278,10 @@ public class MainFrame extends JFrame
             } 
         } );        
         
-        
+        ToolBar.add(btRefresh);
         ToolBar.add(btPlay);
         ToolBar.add(btPause);
-        ToolBar.add(btRefresh);
+        
         ToolBar.addSeparator();
         ToolBar.add(btInputData);
         ToolBar.add(btInputFile);
@@ -464,6 +470,7 @@ public class MainFrame extends JFrame
     public MainFrame()
     {
         lbArrays = new JLabel[num*(frame+2)];
+        lbArray_page=new JLabel[num];
         // thiet lap kieu chay chuong trinh
 	setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
         // khởi tạo frame
@@ -582,7 +589,7 @@ public class MainFrame extends JFrame
                 rdOPT.setEnabled(true);
                 break;
             case 2:// trạng thái khi play
-                btPlay.setEnabled(true);
+                btPlay.setEnabled(false);
                 btPause.setEnabled(true);
                 btRefresh.setEnabled(true);
                 btInputData.setEnabled(false);
@@ -621,66 +628,20 @@ public class MainFrame extends JFrame
     {
         model.addElement("void FIFO(int n, int frame, int *a, int *frames)");
         model.addElement("{");
-<<<<<<< HEAD
         model.addElement("int i, j = 0, k, available, count = 0;");
         model.addElement("for (i = 1; i <= n; i++)");
         model.addElement("{");
-        model.addElement("      available = 0;");
-        model.addElement("      for (k = 0; k<frame; k++)");
-        model.addElement("      if (frames[k] == a[i])");
-        model.addElement("          available = 1; ");
-        model.addElement("      if (available == 0) ");
-        model.addElement("      {");
-        model.addElement("          frames[j] = a[i];");
-        model.addElement("          j = (j + 1) % frame;");
-        model.addElement("          count++;");
-        model.addElement("for (k = 0; k < frame; k++)");
-        model.addElement("printf(\"%d\\t\", frames[k]);");
-        model.addElement("printf( \"| F\");");
-        model.addElement("}");
-        model.addElement("else");
-        model.addElement("{");
-        model.addElement("for (k = 0; k < frame; k++)");
-        model.addElement("printf(\"%d\\t\", frames[k]);");
-        model.addElement("}");
-        model.addElement("}");
-=======
-        model.addElement("for (int i = 0; i<frame; i++)");
-        model.addElement("  frames[i] = -1;");
-        model.addElement("int i, j = 0, k, available, count = 0;");
-//        model.addElement("printf( \" Chuoi \\t|Khung trang\");");
-//        model.addElement("for (int k = 0; k < frame - 1; k++)");
-//        model.addElement("printf( \"\\t\");");
-//        model.addElement("printf( \"|\\n\");");
-        model.addElement("for (i = 1; i <= n; i++)");
-        model.addElement("{");
-        //model.addElement("printf(\" %d\\t\", a[i]);");
         model.addElement("  available = 0;");
         model.addElement("  for (k = 0; k<frame; k++)");
         model.addElement("      if (frames[k] == a[i])");
         model.addElement("          available = 1; ");
-        model.addElement("if(available == 0) ");
-        model.addElement("{");
-        model.addElement("  frames[j] = a[i];");
-        model.addElement("  j = (j + 1) % frame;");
-        model.addElement("  count++;");
-//        model.addElement("printf( \"|\");");
-//        model.addElement("for (k = 0; k < frame; k++)");
-//        model.addElement("printf(\"%d\\t\", frames[k]);");
-//        model.addElement("printf( \"| F\");");
->>>>>>> 58bce8d3896b64147eb02dd5f993d6c1a9b2d093
+        model.addElement("  if(available == 0) ");
+        model.addElement("  {");
+        model.addElement("      frames[j] = a[i];");
+        model.addElement("      j = (j + 1) % frame;");
+        model.addElement("      count++;");
+        model.addElement("  }");
         model.addElement("}");
-//        model.addElement("else");
-//        model.addElement("{");
-//        model.addElement("printf( \"|\");");
-//        model.addElement("for (k = 0; k < frame; k++)");
-//        model.addElement("printf(\"%d\\t\", frames[k]);");
-//        model.addElement("printf( \"|\");");
-//        model.addElement("}");
-//        model.addElement("printf( \"\\n\");");
-//        model.addElement("}");
-//        model.addElement("printf( \"So trang loi la: %d\\n\", count);"); 
-//        model.addElement("}");
     }
     
     public void addOPTcode()
@@ -840,18 +801,20 @@ public class MainFrame extends JFrame
     
     public void FIFO()
     {     
-        HighLight(1);
+        HighLight(0);
         for (int i = 0; i<frame; i++)
 		frames[i] = -1;
-        for(int i=0;i<frame;i++)
-        {
-            lbArrays[num*(i+1)].setText("x");//+frames[i]);
-        }
+//        for(int i=0;i<frame;i++)
+//        {
+//            lbArrays[num*(i+1)].setText("x");//+frames[i]);
+//        }
         HighLight(2);
-	int i, j = 0, k, available, count = 0;
-        HighLight(3);
+	int i, j = 0, k, available;
+        count = 0;
+        //HighLight(3);
 	for (i = 0; i < num; i++)
 	{
+                HighLight(3);
 		available = 0; 
                 //so sanh
                 
@@ -863,7 +826,7 @@ public class MainFrame extends JFrame
                             break;
                         }
 
-                HighLight(5);
+                //
 		if (available == 0) 
 		{
                         SetValue(lbArrays[i+num*1],frames[0]);
@@ -871,21 +834,21 @@ public class MainFrame extends JFrame
                         SetValue(lbArrays[i+num*3],frames[2]);
                         frames[j]=array[i];
 			frames[j] = array[i];
+                        HighLight(6);
                         Move(lbArrays[i],lbArrays[i+num*frame]);
+                        HighLight(9);
                         SetF(lbArrays[i+num*(frame+1)]);
                         LightLabel(lbArrays[i+num*(j+1)]);
+                        HighLight(11);
                         Move(lbArrays[i],lbArrays[i+num*(j+1)]);
                         LightLabel(lbArrays[i]);
-                        SetValue(lbArrays[i],array[i]);
-                        
-                                
+                        SetValue(lbArrays[i],array[i]);     
 			j = (j + 1) % frame;
-                        
 			count++;
 		}
 		else
 		{
-                    HighLight(7);
+                    HighLight(8);
                     SetValue(lbArrays[i+num*1],frames[0]);
                     SetValue(lbArrays[i+num*2],frames[1]);
                     SetValue(lbArrays[i+num*3],frames[2]);
@@ -893,8 +856,27 @@ public class MainFrame extends JFrame
                     SetT(lbArrays[i+num*(frame+1)]);
 		}
 	}
-	System.out.print( "So trang loi la: "+count+"\n");
-         
+        Result();
+    }
+    public void Result()
+    {
+            curT ++;
+            int cur = curT;
+            threads[cur] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                            if (cur != 0) {
+                                    threads[cur-1].join();
+                            }
+                            btnLoiTrang.setText("Số lỗi trang là: "+count); 
+                            btnLoiTrang.setBackground(Color.GREEN);
+                            Thread.sleep(time);
+                    } catch (Exception e) {
+                    }
+                }
+            });
+            threads[cur].start();
     }
     public void Move(JLabel lb1, JLabel lb2) 
     {
@@ -1090,7 +1072,7 @@ public class MainFrame extends JFrame
         {
             try 
             {
-                threads[i].resume();
+                threads[i].resume();;
             } catch (Exception e) {}
         }
     }
@@ -1110,14 +1092,19 @@ public class MainFrame extends JFrame
     // hàm hiển thị khung mảng ra màn hình
     public void HienKhungMoPhong()//int[] a,int frame) 
     {
+        btnLoiTrang.setFont(new Font("Arial", Font.PLAIN, 20));
+        btnLoiTrang.setText("Số lỗi trang là: ");
+        btnLoiTrang.setBounds(300,40,200,40);  
+        PanelChiaTrang.add(btnLoiTrang);                     
         int frame = 3;
         /////////////////////////////////////////////
         int intx=450-42*(num/2);
         //String str;
+        
         for(int i=0; i< num*(frame+2) ;i++ )//((a.length)*(frame+2)); i++ )//lbArrays.length; i++)
         {
             lbArrays[i]= new JLabel();
-            lbArrays[i].setBounds(intx+42*(i%num), 50+42*(i/num), 40, 40);
+            lbArrays[i].setBounds(intx+42*(i%num), 100+42*(i/num), 40, 40);
             lbArrays[i].setHorizontalAlignment(SwingConstants.CENTER);
             lbArrays[i].setVerticalAlignment(SwingConstants.CENTER);
             lbArrays[i].setBackground(Color.WHITE);
@@ -1128,12 +1115,27 @@ public class MainFrame extends JFrame
         }
         for(int i=0;i<num;i++)
         {
+            
             lbArrays[i].setText(""+array[i]);
             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            
         }
         for(int i=num*(frame+1); i<lbArrays.length; i++)
         {
             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.blue));
+        }
+        for(int i=0; i<num; i++)
+        {
+            lbArray_page[i]= new JLabel();
+            lbArray_page[i].setBounds(intx+42*i, 100, 40, 40);
+            lbArray_page[i].setHorizontalAlignment(SwingConstants.CENTER);
+            lbArray_page[i].setVerticalAlignment(SwingConstants.CENTER);
+            lbArray_page[i].setBackground(Color.WHITE);
+            lbArray_page[i].setText(""+array[i]);
+            lbArray_page[i].setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            lbArray_page[i].setOpaque(true);
+            PanelChiaTrang.add(lbArray_page[i]);
+            PanelChiaTrang.repaint();
         }
     }
     
@@ -1145,6 +1147,11 @@ public class MainFrame extends JFrame
             //lbArrays[i].setVisible(false);
             PanelChiaTrang.remove(lbArrays[i]);
         }
+        for(int i=0; i<num; i++)
+        {
+            PanelChiaTrang.remove(lbArray_page[i]);
+        }
+        PanelChiaTrang.remove(btnLoiTrang);
 
 //        lbPoint1.setText("");
 //        lbPoint2.setText("");
@@ -1241,7 +1248,7 @@ public class MainFrame extends JFrame
                     lsCode.setSelectedIndex(line);
                     // Tu cuon den dong dang highlight
                     lsCode.ensureIndexIsVisible(line); 
-                    Thread.sleep(time);
+                    Thread.sleep(2*time);
                 } catch (Exception e) {}
             }
         });
