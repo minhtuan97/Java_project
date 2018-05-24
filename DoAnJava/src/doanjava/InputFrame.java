@@ -10,6 +10,8 @@ import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 import javax.swing.JButton;
@@ -33,8 +35,11 @@ import javax.swing.text.NumberFormatter;
  */
 
 
-public class InputFrame extends JFrame 
+public class InputFrame extends JFrame  implements ItemListener
+        
+        
 {
+   
     
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
@@ -45,7 +50,7 @@ public class InputFrame extends JFrame
     private int num = 0,frame = 0, Trang = 0;
     private int[] arrays;
     private int[] frames;
-    private JButton btnOK,btReSet,btTaoMang;    
+    private JButton btnOK,btReset,btTaoMang;    
 
 
     public InputFrame()
@@ -94,15 +99,18 @@ public class InputFrame extends JFrame
 	spFrame.setBounds(180, 70, 80, 25);
 	contentPane.add(spFrame);	
         
-        btReSet = new JButton("Đặt lại");
-	btReSet.setBackground(SystemColor.activeCaption);
-        btReSet.setBounds(380, 10, 80, 25);
-	contentPane.add(btReSet);
+        btReset = new JButton("Đặt lại");
+	btReset.setBackground(SystemColor.activeCaption);
+        btReset.setBounds(380, 10, 80, 25);
+	contentPane.add(btReset);
+	
         
         cbRandom = new JCheckBox("Ngẫu nhiên",false);
         cbRandom.setBounds(290, 10, 80, 25);
         contentPane.add(cbRandom);
-		
+        cbRandom.addItemListener(this);
+        
+        
 	btTaoMang = new JButton("Tạo Mảng");
 	btTaoMang.setBackground(SystemColor.activeCaption);
         btTaoMang.setBounds(290, 40, 170, 25);
@@ -146,16 +154,57 @@ public class InputFrame extends JFrame
 			lbArrays[i].setSize(40,30);
 			if (i == 0 || i == 5 || i == 10 || i == 15) 
                                 lbArrays[i].setLocation(10, 100+ 40*(i+1)/3);
+                           
 			else
 				lbArrays[i].setLocation(lbArrays[i-1].getX()+95, lbArrays[i-1].getY());
-			txtArrays[i].setSize(40,30);
-			txtArrays[i].setLocation(lbArrays[i].getX() + 40, lbArrays[i].getY());
+			
+                        int rand = rand(0, 100);
+                        // gia tri cua cac phan tu
+                        txtArrays[i].setSize(40,30);
+			txtArrays[i].setLocation(lbArrays[i].getX() + 40, lbArrays[i].getY());// toa do x cua lbArrays[i] cach txtArrays la 40
+                        
+                        if(cbRandom.isSelected() == true)
+                            txtArrays[i].setValue(rand);
+                        
+                    
+                        
 		}
 		contentPane.setVisible(true);
 		contentPane.validate();
 		contentPane.repaint();
+                    btReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < num; i++) {
+                                    txtArrays[i].setValue(0);
+                                }
+                               
+			}
+		});
+                
 	}
-	
+        
+        // ham bat su kien cho Checkbox Random. (Phai co)
+        @Override
+        public void itemStateChanged(ItemEvent e){
+         
+        }
+        // ham tao random
+        public static int rand(int min, int max)
+        {
+            try
+            {
+                Random rn = new Random();
+                int range = max - min + 1;
+                int randomNum = min + rn.nextInt(range);
+                return randomNum;       
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                return -1;
+            }
+         }
+        
 	public void deleteArrays() {
 		for (int i = 0; i < num; i++) {
 			lbArrays[i].setVisible(false);
@@ -204,18 +253,6 @@ public class InputFrame extends JFrame
         //
     }
 
-    // tao mang o nho random
-    public void TaoRanDomMang(int num, int max) 
-    {
-        Random rand = new Random();
-        for (int i = 0; i < num; i++) {
-            int ranNum = rand.nextInt(max) + 0;
-            //lbArrays[i].setText(String.valueOf(ranNum));
-            //lbArrays[i].setForeground(Color.BLUE);
-            //array[i] = ranNum;
-        }
-    }
-    
     // tra ve so khung trang
     public int getFrame()
     {
