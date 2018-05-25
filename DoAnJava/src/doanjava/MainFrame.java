@@ -1152,14 +1152,6 @@ public class MainFrame extends JFrame
             PanelChiaTrang.remove(lbArray_page[i]);
         }
         PanelChiaTrang.remove(btnLoiTrang);
-
-//        lbPoint1.setText("");
-//        lbPoint2.setText("");
-//        lbPointM.setText("");
-//        pnImitiate.remove(lbPoint1);
-//        pnImitiate.remove(lbPoint2);
-//        pnImitiate.remove(lbPointM);
-
         for (int i = 0; i < curT; i++) 
         {
             try 
@@ -1172,7 +1164,6 @@ public class MainFrame extends JFrame
 
         PanelChiaTrang.revalidate();
         PanelChiaTrang.repaint();
-        //setState(0);
     }
     
     // thread đặt lại vị trí cho mảng
