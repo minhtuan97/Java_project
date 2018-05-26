@@ -199,7 +199,7 @@ public class InputFileFrame extends JFrame
                 fr.close();
                 br.close();
                 Frame[] listFrames = Frame.getFrames();
-                ((MainFrame) listFrames[0]).setData(arrays,num,frame);
+                //((MainFrame) listFrames[0]).setData(arrays,num,frame);
                 JOptionPane.showMessageDialog(this, "Đã tạo dữ liệu mảng thành công!");
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); 
             }            

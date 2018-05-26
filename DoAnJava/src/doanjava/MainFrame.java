@@ -67,7 +67,8 @@ public class MainFrame extends JFrame
     private static final long serialVersionUID = 1L;
     
     // # Khai báo các các phần tử trong frame
-     
+     // tao bien lay du lieu tu input frame
+    public static MainFrame data;
     // Gom nhom cac radio button
     private ButtonGroup grSort;
     // Các nút trên thanh toolbar
@@ -110,7 +111,10 @@ public class MainFrame extends JFrame
     // biến lưu số frame
     private int frame = 3;
     // mang int luu cac phan tu o nho
-    private int[] array = {1,2,3,4,1,2,5,1,2,3,4,5,4,5,2,3,1,2,3,2};
+    private int[] array = {1,2,3,4,1,2,5,1,2,3,4,5,4,5,2,3,1,2,2};
+    
+    // the integer array save data from inputFrame
+    public int[] arraySave;
     // mang int luu cac phan tu frame
     private int[] frames = new int[3];
     
@@ -129,6 +133,10 @@ public class MainFrame extends JFrame
     // # Khai báo các biến Hàm sử lý sự kiện
 
     
+    // create a method recieve the data from inputFrame
+    public void setData(int []arr){
+        array = arr;
+    }
     // # Tạo Thanh MenuBar
     private void CreateMenuBar()
     {
@@ -269,14 +277,10 @@ public class MainFrame extends JFrame
         btInputFile = new JButton(Icon5);
         btInputFile.setBorder(new EmptyBorder(7, 7, 7, 7));
         btInputFile.setText("Nhập bằng file");
-        btInputFile.addActionListener( new ActionListener()
-        { 
-            public void actionPerformed(ActionEvent actionEvent) 
-            { 
-                DatTrangThai(0);
-                HienKhungMoPhong();
-            } 
-        } );        
+        btInputFile.addActionListener((ActionEvent actionEvent) -> {
+            DatTrangThai(0);
+            HienKhungMoPhong();
+        });        
         
         ToolBar.add(btRefresh);
         ToolBar.add(btPlay);
@@ -466,6 +470,7 @@ public class MainFrame extends JFrame
         add(PanelTrangThai,BorderLayout.SOUTH);
     }
      
+    //constructor co tham so de truyen du lieu
     // constructor cua lop MainFrame ###
     public MainFrame()
     {
@@ -514,6 +519,8 @@ public class MainFrame extends JFrame
         CreatePanelCode();
         // thêm thanh trạng thái
         CreatePanelStatus(); 
+        //lay du lieu
+        data = this;
     }
     
     // set lock and feel ###
@@ -910,6 +917,7 @@ public class MainFrame extends JFrame
             threads[cur].start();
     }
     
+    // make the choosen number to light 
     public void LightLabel(JLabel lb)
     {
         curT++;
@@ -922,7 +930,7 @@ public class MainFrame extends JFrame
                             if (cur != 0) {
                                     threads[cur-1].join();
                             }
-                            lb.setBackground(Color.YELLOW);
+                            lb.setBackground(Color.YELLOW); // set the color is yellow
                             Thread.sleep(3*time);
                     } catch (Exception e) {
 
@@ -932,6 +940,7 @@ public class MainFrame extends JFrame
             threads[cur].start();
     }
     
+    // if the algorithm return false
     public void SetF(JLabel lb)
     {
         curT++;
@@ -954,6 +963,7 @@ public class MainFrame extends JFrame
             threads[cur].start();
     }
     
+    // if the algorithm return true
     public void SetT(JLabel lb)
     {
         curT++;
@@ -975,7 +985,9 @@ public class MainFrame extends JFrame
             });
             threads[cur].start();
     }
-    public void SetValue(JLabel lb, int x)
+    
+    // put the data to compare
+    public void SetValue(JLabel lb, int x) // x is a value of memory cell
     {
         curT++;
 
@@ -987,7 +999,7 @@ public class MainFrame extends JFrame
                             if (cur != 0) {
                                     threads[cur-1].join();
                             }
-                            lb.setText(""+x);
+                            lb.setText(""+x); // assign the value into the memory cell
                             Thread.sleep(3*time);
                     } catch (Exception e) {
 
@@ -1113,9 +1125,12 @@ public class MainFrame extends JFrame
             PanelChiaTrang.add(lbArrays[i]);
             PanelChiaTrang.repaint();
         }
+        
+        
+        // get data into the frame
         for(int i=0;i<num;i++)
         {
-            
+           
             lbArrays[i].setText(""+array[i]);
             lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.GREEN));
             
