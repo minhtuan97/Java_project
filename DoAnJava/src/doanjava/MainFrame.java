@@ -5,54 +5,15 @@
  */
 package doanjava;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dialog;
+import java.awt.*;
 import java.awt.Dialog.ModalExclusionType;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import static java.lang.Thread.sleep;
-import java.util.Random;
-import javafx.beans.value.ChangeListener;
+import java.awt.event.*;
+import java.io.*;
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
+import javax.swing.*;
 import javax.swing.UIManager.*;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
+import javax.swing.border.*;
+import javax.swing.event.*;
 
 /**
  *
@@ -62,62 +23,44 @@ import javax.swing.event.ChangeEvent;
 // Lớp MainFrame kế thừa từ JFrame 
 public class MainFrame extends JFrame
 {  
-
+   
     // Serial Version
     private static final long serialVersionUID = 1L;
-    
     // # Khai báo các các phần tử trong frame
-     // tao bien lay du lieu tu input frame
-    public static MainFrame data;
     // Gom nhom cac radio button
-    private ButtonGroup grSort;
+    private final ButtonGroup grSort;
     // Các nút trên thanh toolbar
-    private JButton btPlay, btPause, btRefresh, btInputData, btInputFile;
+    private final JButton btPlay, btPause, btRefresh, btInputData, btInputFile, btDel, btShow;
     // doi tuong luu buoc chay cac dong code
     private DefaultListModel<String> model;
     // list string hien thi code
     private JList<String> lsCode;
     // biến thanh menu bar
-    private JMenuBar MenuBar;
+    private final JMenuBar MenuBar;
     // slider tốc độ , và thu phóng
-    private JSlider SliderTocDoMoPhong,SliderThuPhongCode;
+    private final JSlider SliderTocDoMoPhong,SliderThuPhongCode;
     // thanh cuon khung code
-    private JScrollPane pnScrollCode; 
+    private final JScrollPane pnScrollCode; 
     // các nút radio chọn thuật toán
     private JRadioButton rdFIFO, rdOPT, rdLRU;
     // Thanh toolbar
-    private JToolBar ToolBar; 
+    private final JToolBar ToolBar; 
     // TabbedPane 
-    private JTabbedPane TabbedPane;
+    private final JTabbedPane TabbedPane;
     // các panel chính        
-    private JPanel PanelChiaTrang,PanelCode,PanelTrangThai;
+    private final JPanel PanelChiaTrang, PanelMoPhong ,PanelCode,PanelTrangThai;
     // mang luu cac label hien thi mo phong
-    private JLabel[] lbArrays;
-    //tao mang label hang dau
-    private JLabel[] lbArray_page;
+    private JLabel[] lbArray, lbArray_Frame, lbArray_Error ;
+    private JLabel[] lbArray_FrameSS, STT;
     // label hien thi cac bien tam i
-    private JLabel lbPoint1 = new JLabel();
-    // label hien thi cac bien tam j
-    private JLabel lbPoint2 = new JLabel();
-    // label hine thi max min trong mo phong thuat toan
-    private JLabel lbPointM = new JLabel();
-    //button hien thi loi trang
-    private JButton btnLoiTrang= new JButton();
-     
+    private JLabel status = new JLabel("");
+    // label hien thi cac bien tam i,j,a,k,count;
+    private JLabel lbI, lbI1, lbai, lbframe, lbloitrang, lbJ, lbViTriThayThe, lbViTriThayThe1, lbTonTai;
     // # Khai báo các biến trong chương trình
-    
     // bien luu so phan tu mang
-    public int num = 20;
-    // biến lưu số frame
-    private int frame = 3;
+    public int num = 0, frame = 0;
     // mang int luu cac phan tu o nho
-    private int[] array = {1,2,3,4,1,2,5,1,2,3,4,5,4,5,2,3,1,2,2};
-    
-    // the integer array save data from inputFrame
-    public int[] arraySave;
-    // mang int luu cac phan tu frame
-    private int[] frames = new int[3];
-    
+    private int[] array, frames;    
     // mang cac threads
     private Thread[] threads = new Thread[10000];
     // vi tri thread hien tai mặc định =-1
@@ -125,44 +68,32 @@ public class MainFrame extends JFrame
     // thoi gian nghi, thuc thi mili giay
     private int time = 35;
     //ket qua loi trang
-    int count;
-    // trạng thái pause
-    private int Pause = 1;        
-    // Khai báo các màu(Color)
-    private final Color cl7 = new Color(200, 150, 150);
-    // # Khai báo các biến Hàm sử lý sự kiện
-
-    
-    // create a method recieve the data from inputFrame
-    public void setData(int []arr){
-        array = arr;
-    }
-    // # Tạo Thanh MenuBar
-    private void CreateMenuBar()
+    int count;     
+     
+    public MainFrame()
     {
+	setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+        setTitle("Đồ Án Java");
+        setSize(1280,720);
+        try 
+        {           
+            Image logo = ImageIO.read(new File("icon/2.jpeg"));
+            setIconImage(logo);  
+        } 
+        catch (IOException ex) {} 
+        setLayout(new BorderLayout());
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);       
+        setResizable(false);
+        ////////////////////////////////////////////////////////////////////////
+        // tạo thanh menu
         MenuBar = new JMenuBar();
-        
-        JMenu menuFile = new JMenu("File");
-        JMenuItem news = new JMenuItem("New");
-        JMenuItem open = new JMenuItem("Open");
-        JMenuItem save = new JMenuItem("Save");
-        JMenuItem exit = new JMenuItem("Exit");
-        menuFile.add(news);
-        menuFile.add(open);
-        menuFile.add(save);
-        menuFile.addSeparator();
-        menuFile.add(exit);
-        
-        JMenu menuHelp = new JMenu("Help");
-        JMenuItem guide = new JMenuItem("Guide");
-        menuHelp.add(guide);
-        
+        JMenu menuHelp = new JMenu("Help");  
         JMenu menuAbout = new JMenu("Abouts");
         JMenuItem info = new JMenuItem("Information");
         JMenuItem fellback = new JMenuItem("Feel Back");
         menuAbout.add(info);
-        menuAbout.add(fellback);
-        
+        menuAbout.add(fellback);   
         info.addActionListener( new ActionListener() 
         { 
             public void actionPerformed(ActionEvent actionEvent) 
@@ -170,29 +101,17 @@ public class MainFrame extends JFrame
                 InfoFrame infoframe = new InfoFrame();
                 infoframe.setVisible(true);
             }
-        } );
-        
-        MenuBar.add(menuFile);
+        }); 
         MenuBar.add(menuHelp);
-        MenuBar.add(menuAbout);
-        
+        MenuBar.add(menuAbout);       
         setJMenuBar(MenuBar);
-        
-    }    
-    // Thanh công cụ
-    private void CreateToolbar()
-    {
+        ///////////////////////////////////////////////////////////////////////
+        // Tạo thanh công cụ
         ToolBar = new JToolBar();
-        // Kéo thả thanh toolbar
         ToolBar.setFloatable(false);
-        // Đặt màu nền
-        ToolBar.setBackground(Color.white);
-        
-        ToolBar.setLayout(new FlowLayout(0, 0, 0));
-        
+        ToolBar.setBackground(Color.white);   
+        ToolBar.setLayout(new FlowLayout(0, 0, 0));    
         ToolBar.setBorder(BorderFactory.createLineBorder(Color.PINK));
-        //tb1.setLayout(new FlowLayout());
-        //ImageIcon exitIcon = new ImageIcon("2.jpeg");
         ImageIcon Icon1 = new ImageIcon(new ImageIcon("icon/play-sign.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btPlay = new JButton(Icon1);
         btPlay.setBorder(new EmptyBorder(7, 7, 7, 7));
@@ -200,36 +119,21 @@ public class MainFrame extends JFrame
         btPlay.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
-            {
-                DatTrangThai(0);
-                if(Pause==1)
+            {                    
+                if(rdFIFO.isSelected())
                 {
-                    ResumeAllThreads();
-                    Pause = 0;
+                    FIFO();
                 }
-                else
-               {
-                    //deleteArrays();
-                    //setState(0);
-                    
-                    if(rdFIFO.isSelected())
-                    {
-                        FIFO();
-                    }
-                    if(rdOPT.isSelected())
-                    {
-                        //OPT();
-                    }
-                    if(rdLRU.isSelected())
-                    {
-                        //LRU();
-                    }
-                    waitEnd();
-                    DatTrangThai(0);
+                if(rdOPT.isSelected())
+                {
+                    //OPT();
+                }
+                if(rdLRU.isSelected())
+                {
+                    //LRU();
                 }
             }
-        });
-        
+        });        
         ImageIcon Icon2 = new ImageIcon(new ImageIcon("icon/pause-symbol.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btPause = new JButton(Icon2);
         btPause.setBorder(new EmptyBorder(7, 7, 7, 7));
@@ -238,12 +142,9 @@ public class MainFrame extends JFrame
         {
             public void actionPerformed(ActionEvent e) 
             {
-                DatTrangThai(0);
-                Pause = 1;
                 SuspendAllThreads();
             }
-	});
-        
+	});    
         ImageIcon Icon3 = new ImageIcon(new ImageIcon("icon/refresh.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btRefresh = new JButton(Icon3);
         btRefresh.setBorder(new EmptyBorder(7, 7, 7, 7));
@@ -252,12 +153,14 @@ public class MainFrame extends JFrame
         {
             public void actionPerformed(ActionEvent e) 
             {
-                DatTrangThai(0);
                 XoaKhungMoPhong();
-                //HienKhungMoPhong();
+                if(num !=0)
+                {
+                   HienKhungMoPhong(); 
+                }
+                
             }
-	});
-       
+	}); 
         ImageIcon Icon4 = new ImageIcon(new ImageIcon("icon/folder.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btInputData = new JButton(Icon4);
         btInputData.setBorder(new EmptyBorder(7, 7, 7, 7));
@@ -266,38 +169,61 @@ public class MainFrame extends JFrame
         { 
             public void actionPerformed(ActionEvent actionEvent) 
             { 
-                DatTrangThai(0);
-                //JOptionPane.showMessageDialog(MainFrame, "I want to set this dialog on top of frame");
                 InputFrame f2 = new InputFrame();
                 f2.setVisible(true);
             } 
-        } );
-        
+        });       
         ImageIcon Icon5 = new ImageIcon(new ImageIcon("icon/txt.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btInputFile = new JButton(Icon5);
         btInputFile.setBorder(new EmptyBorder(7, 7, 7, 7));
         btInputFile.setText("Nhập bằng file");
-        btInputFile.addActionListener((ActionEvent actionEvent) -> {
-            DatTrangThai(0);
-            HienKhungMoPhong();
-        });        
-        
+        btInputFile.addActionListener( new ActionListener()
+        { 
+            public void actionPerformed(ActionEvent actionEvent) 
+            { 
+                InputFileFrame f3 = new InputFileFrame();
+                f3.setVisible(true);
+            } 
+        }); 
+        ImageIcon Icon6 = new ImageIcon(new ImageIcon("icon/hide.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
+        btDel = new JButton(Icon6);
+        btDel.setBorder(new EmptyBorder(7, 7, 7, 7));
+        btDel.setText("Delete");
+        btDel.addActionListener(new ActionListener() 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+                XoaKhungMoPhong();
+                num = 0;
+            }
+	}); 
+        ImageIcon Icon7 = new ImageIcon(new ImageIcon("icon/eye.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
+        btShow = new JButton(Icon7);
+        btShow.setBorder(new EmptyBorder(7, 7, 7, 7));
+        btShow.setText("Show");
+        btShow.addActionListener(new ActionListener() 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+                if(num !=0)
+                {
+                   HienKhungMoPhong(); 
+                }
+            }
+	}); 
         ToolBar.add(btRefresh);
         ToolBar.add(btPlay);
-        ToolBar.add(btPause);
-        
+        ToolBar.add(btPause);    
+        ToolBar.addSeparator();
+        ToolBar.add(btDel);
+        ToolBar.add(btShow);
         ToolBar.addSeparator();
         ToolBar.add(btInputData);
-        ToolBar.add(btInputFile);
-        
+        ToolBar.add(btInputFile);      
         ToolBar.setSize(800, 400);
-        add(ToolBar,BorderLayout.NORTH);
-        
-    }
-    
-    // Pannel Mô phỏng thuật giải ###
-    private void CreatePanelMoPhong()
-    {
+        add(ToolBar,BorderLayout.NORTH); 
+        ////////////////////////////////////////////////////////////////////////
+        // thêm Pannel chính hiển thị đồ họa
         TabbedPane = new JTabbedPane();
         TabbedPane.setBorder(BorderFactory.createLineBorder(Color.yellow));
         
@@ -374,9 +300,10 @@ public class MainFrame extends JFrame
         SliderTocDoMoPhong.setBounds(480, 10, 150, 20);
         SliderTocDoMoPhong.setBackground(Color.WHITE);
         // Sự kiện thay đổi thanh tốc độ mô phỏng
-        SliderTocDoMoPhong.addChangeListener(new javax.swing.event.ChangeListener() 
+        SliderTocDoMoPhong.addChangeListener(new ChangeListener() 
         {
-            public void stateChanged(ChangeEvent e) {
+            public void stateChanged(ChangeEvent e) 
+            {
                 switch(((JSlider) e.getSource()).getValue())
                 {
                     case 1:
@@ -401,19 +328,20 @@ public class MainFrame extends JFrame
             }
         });     
         PanelChiaTrang.add(SliderTocDoMoPhong);
-        // thiết lập lại kích không chịu ảnh hưởng của Layout bên ngoài
         PanelChiaTrang.setPreferredSize(new Dimension(900, 650));
+        PanelMoPhong = new JPanel();
+        PanelMoPhong.setPreferredSize(new Dimension(898, 650));
+        PanelMoPhong.setBounds(3, 50, 892, 510);
+        PanelMoPhong.setBorder(BorderFactory.createLineBorder(Color.red));
+        PanelMoPhong.setBackground(Color.WHITE);
+        PanelMoPhong.setLayout(null);
+        PanelChiaTrang.add(PanelMoPhong);
         
-        TabbedPane.add("Chia trang ô nhớ", PanelChiaTrang);
+        TabbedPane.add("Thuật toán Chia trang ô nhớ", PanelChiaTrang);
         add(TabbedPane,BorderLayout.WEST);
-        DatTrangThai(0);
-    }
-    
-    // Pannel hiển thị Code ###
-     private void CreatePanelCode()
-    {
+        ////////////////////////////////////////////////////////////////////////
+        // tạo pannel hiển thị code
         PanelCode = new JPanel();
-        //PanelCode.setBorder(BorderFactory.createLineBorder(Color.GREEN));
         PanelCode.setLayout(null);
         PanelCode.setBorder(new TitledBorder(null, "Code C/C++", TitledBorder.LEADING, TitledBorder.LEFT, null, null));
         PanelCode.setBackground(Color.white);   
@@ -426,22 +354,19 @@ public class MainFrame extends JFrame
         PanelCode.add(lb1);
         PanelCode.add(lb2);
         SliderThuPhongCode = new JSlider(JSlider.HORIZONTAL, 8, 20, 10);
-        //slider1.setMajorTickSpacing(10);
-        //slider1.setMinorTickSpacing(1);
-        //slider1.setPaintTicks(true);
-        //slider1.setPaintLabels(true);
         SliderThuPhongCode.setBounds(120, 20, 150, 23);
         SliderThuPhongCode.setBackground(Color.WHITE);
         PanelCode.add(SliderThuPhongCode);
         
-        SliderThuPhongCode.addChangeListener(new javax.swing.event.ChangeListener() {
-         public void stateChanged(ChangeEvent e) {
-            lsCode.setFont(new Font("Monospaced",Font.BOLD,((JSlider)e.getSource()).getValue()));
-            lb2.setText(((JSlider)e.getSource()).getValue() +" pixels");
-            //lsCode.repaint();
-         }
-      });
-        
+        SliderThuPhongCode.addChangeListener(new ChangeListener() 
+        {
+            public void stateChanged(ChangeEvent e) 
+            {
+                lsCode.setFont(new Font("Monospaced",Font.BOLD,((JSlider)e.getSource()).getValue()));
+                lb2.setText(((JSlider)e.getSource()).getValue() +" pixels");
+                lsCode.repaint();
+            }
+        });  
         pnScrollCode = new JScrollPane();
 	pnScrollCode.setBounds(10, 50, 350, 530);
 	PanelCode.add(pnScrollCode);
@@ -455,74 +380,21 @@ public class MainFrame extends JFrame
         model.removeAllElements();
         addFIFOcode();   
         lsCode.setSelectedIndex(0);
-        
         add(PanelCode,BorderLayout.CENTER);
-                         
-    }
-    
-    // Thanh trạng thái của ứng dụng ###
-    private void CreatePanelStatus()
-    {
+        ////////////////////////////////////////////////////////////////////////
+        // thêm thanh trạng thái
         PanelTrangThai = new JPanel();
-        PanelTrangThai.setBackground(Color.LIGHT_GRAY);
+        PanelTrangThai.setBackground(Color.WHITE);
         PanelTrangThai.setBorder(BorderFactory.createLineBorder(Color.red));
         PanelTrangThai.setPreferredSize(new Dimension(800,30));
+        JLabel Copyright = new JLabel("Copyright © 2018"); 
+        Copyright.setHorizontalAlignment(SwingConstants.CENTER);
+        Copyright.setVerticalAlignment(SwingConstants.CENTER);
+        Copyright.setBackground(Color.WHITE);
+        Copyright.setOpaque(true);
+        PanelTrangThai.add(Copyright);  
         add(PanelTrangThai,BorderLayout.SOUTH);
-    }
-     
-    //constructor co tham so de truyen du lieu
-    // constructor cua lop MainFrame ###
-    public MainFrame()
-    {
-        lbArrays = new JLabel[num*(frame+2)];
-        lbArray_page=new JLabel[num];
-        // thiet lap kieu chay chuong trinh
-	setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
-        // khởi tạo frame
-        // Đặt Tiêu đề cho frame
-        setTitle("Đồ Án Java");
-        // Đặt kích thước frame
-        setSize(1280,720);
-        // Đặt logo cho ứng dụng
-        try 
-        {           
-            Image logo = ImageIO.read(new File("icon/2.jpeg"));
-            setIconImage(logo);
-        } 
-        catch (IOException ex) 
-        {
-            // handle exception...
-        }  
-        //ImageIcon Icon0 = new ImageIcon(new ImageIcon("icon/a2.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT)); 
-        // Đặt layout cho frame
-        setLayout(new BorderLayout());
-        // hiển thị frame ở giữa màn hình
-        setLocationRelativeTo(null);
-        // tắt chương trình khi bấm nút X
-        setDefaultCloseOperation(EXIT_ON_CLOSE);       
-        // khong thay doi kich thuoc
-        setResizable(false);
-        // Đặt kích thước tối đa cho frame
-        //setMaximumSize(new Dimension(10000, 10000));
-        // Đặt kích thước tối thiểu cho frame
-        //setMinimumSize(new Dimension(300, 300));
-        // frame có kích thước vừa đủ với nội dung của frame 
-        //pack();
-          
-        // tạo thanh menu
-        CreateMenuBar();
-        // Tạo thanh công cụ
-        CreateToolbar();  
-        // thêm Pannel chính hiển thị đồ họa
-        CreatePanelMoPhong();
-        // tạo pannel hiển thị code
-        CreatePanelCode();
-        // thêm thanh trạng thái
-        CreatePanelStatus(); 
-        //lay du lieu
-        data = this;
-    }
-    
+    }   
     // set lock and feel ###
     public static void setLockAndFeel() 
     {
@@ -542,42 +414,39 @@ public class MainFrame extends JFrame
         {
             // If Nimbus is not available, you can set the GUI to another look and feel.
         }
-    }
-    
+    }   
     // Hàm Main ###
     public static void main(String[] args)
     {
         // chạy ứng dụng trong một luồng do EventQueue quản lý : đảm bảo an toàn cho ứng dụng
-        EventQueue.invokeLater(
-                new Runnable() 
+        EventQueue.invokeLater( new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                setLockAndFeel();
+                try 
                 {
-                    @Override
-                    public void run() 
-                    {
-                        setLockAndFeel();
-                        try 
-                        {
-                            MainFrame f = new MainFrame();
-                            //set JFrame full screen
-                            //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                             f.setVisible(true);
-                        } 
-                        catch (Exception e) 
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-		});          
-    }      
-    
+                    MainFrame f = new MainFrame();
+                    //set JFrame full screen
+                    //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                     f.setVisible(true);
+                } 
+                catch (Exception e) 
+                {
+                    e.printStackTrace();
+                }
+            }
+        });          
+    }        
     // Hàm sử lý trạng thái các nút
     public void DatTrangThai(int s)
     {
         switch(s)
         {
             case 0:// trạng thái lúc khởi chạy chương trình
-                btPlay.setEnabled(true);
-                btPause.setEnabled(true);
+                btPlay.setEnabled(false);
+                btPause.setEnabled(false);
                 btRefresh.setEnabled(true);
                 btInputData.setEnabled(true);
                 btInputFile.setEnabled(true);
@@ -587,7 +456,7 @@ public class MainFrame extends JFrame
                 break;
             case 1:// trạng thái sau khi nhập dữ liệu
                 btPlay.setEnabled(true);
-                btPause.setEnabled(true);
+                btPause.setEnabled(false);
                 btRefresh.setEnabled(true);
                 btInputData.setEnabled(true);
                 btInputFile.setEnabled(true);
@@ -616,7 +485,7 @@ public class MainFrame extends JFrame
             case 4:// trạng thái khi hoàn tất
                 btPlay.setEnabled(false);
                 btPause.setEnabled(false);
-                btRefresh.setEnabled(false);
+                btRefresh.setEnabled(true);
                 btInputData.setEnabled(true);
                 btInputFile.setEnabled(true);
                 rdFIFO.setEnabled(true);
@@ -627,415 +496,88 @@ public class MainFrame extends JFrame
                 //
                 ;
         }
-    }
-    
+    }    
     // tao Du lieu chay ben o code
-    // thuat toan FIFO
     public void addFIFOcode()
     {
-        model.addElement("void FIFO(int n, int frame, int *a, int *frames)");
-        model.addElement("{");
-        model.addElement("int i, j = 0, k, available, count = 0;");
-        model.addElement("for (i = 1; i <= n; i++)");
-        model.addElement("{");
-        model.addElement("  available = 0;");
-        model.addElement("  for (k = 0; k<frame; k++)");
-        model.addElement("      if (frames[k] == a[i])");
-        model.addElement("          available = 1; ");
-        model.addElement("  if(available == 0) ");
-        model.addElement("  {");
-        model.addElement("      frames[j] = a[i];");
-        model.addElement("      j = (j + 1) % frame;");
-        model.addElement("      count++;");
-        model.addElement("  }");
-        model.addElement("}");
-    }
-    
+        model.addElement("void FIFO( n, frame, a[], frames[])           ");//0
+        model.addElement("{                                             ");//1
+        model.addElement("  for (int i = 0; i < frame; i++)             ");//2
+        model.addElement("      frames[i] = -1;                         ");//3
+        model.addElement("  int VTThayThe = -1;                         ");//4
+        model.addElement("  for (int i = 0; i < num; i++)               ");//5
+        model.addElement("  {                                           ");//6
+        model.addElement("      SwapFrame(i);                           ");//7
+        model.addElement("      int TonTai = 0;                         ");//8
+        model.addElement("      for (int k = 0; k < frame; k++)         ");//9
+        model.addElement("          if (frames[k] == array[i])          ");//10
+        model.addElement("              TonTai = 1;                     ");//11
+        model.addElement("      if (TonTai == 0)                        ");//12
+        model.addElement("      {                                       ");//13
+        model.addElement("          VTThayThe=(VTThayThe+1)%frame;      ");//14
+        model.addElement("          frames[ViTriThayThe] = array[i];    ");//15
+        model.addElement("          SetFalse(i);                        ");//16
+        model.addElement("      }                                       ");//17
+        model.addElement("      SwapFrame(i);                           ");//18
+        model.addElement("  }                                           ");//19
+        model.addElement("}                                             ");//20
+    }    
     public void addOPTcode()
     {
-        model.addElement("void OTP(int n, int frame, int *a, int *frames)");
-        model.addElement("for (int i = 1; i <= frame; i++)");
-        model.addElement("frames[i] = -1;");
-        model.addElement("int i, j, available, count = 0;");
-        model.addElement("printf( \" Chuoi\\t|Khung trang\");");
-        model.addElement("for (int k = 0; k<frame - 1; k++)");
-        model.addElement("printf( \"\\t\");");
-        model.addElement("printf( \"|\\n\");");
-        model.addElement("for (i = 1; i <= n; i++)");
-        model.addElement("{");
-        model.addElement("printf( \" %d\\t\",a[i]);");
-        model.addElement("available = 0;");
-        model.addElement("for (int k = 1; k <= frame; k++)");
-        model.addElement("if (frames[k] == a[i])");
-        model.addElement("available = 1;");
-        model.addElement("if (available == 0)");
-        model.addElement("{");
-        model.addElement("int j = TimViTriLRU(i, n, frame, a, frames);");
-        model.addElement("frames[j] = a[i];");
-        model.addElement("count++;");
-        model.addElement("printf( \"|\");");
-        model.addElement("for (int k = 1; k <= frame; k++)");
-        model.addElement("printf( \"%d\\t\",frames[k]);");
-        model.addElement("printf( \"| F\");");
-        model.addElement("}");
-        model.addElement("else");
-        model.addElement("{");
-        model.addElement("printf( \"|\");");
-        model.addElement("for (k = 1; k <= frame; k++)");
-        model.addElement("printf( \"%d\\t\",frames[k]);");
-        model.addElement("printf( \"|\");");
-        model.addElement("}");
-        model.addElement("printf( \"So trang loi la: %d\\n\",count);");
-        model.addElement("}");
-        model.addElement("");
-        model.addElement("int TimViTriLRU(int i, int n, int frame, int *a, int *frames)");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
+        model.addElement("void OTP( n, frame, a[], frames[])            ");//0
+        model.addElement("{                                             ");//1
+        model.addElement("  for (int i = 0; i < frame; i++)             ");//2
+        model.addElement("      frames[i] = -1;                         ");//3
+        model.addElement("  int VTThayThe = -1;                         ");//4
+        model.addElement("  for (int i = 0; i < num; i++)               ");//5
+        model.addElement("  {                                           ");//6
+        model.addElement("      SwapFrame(i);                           ");//7
+        model.addElement("      int TonTai = 0;                         ");//8
+        model.addElement("      for (int k = 0; k < frame; k++)         ");//9
+        model.addElement("          if (frames[k] == array[i])          ");//10
+        model.addElement("              TonTai = 1;                     ");//11
+        model.addElement("      if (TonTai == 0)                        ");//12
+        model.addElement("      {                                       ");//13
+        model.addElement("          VTThayThe=TimViTriOPT();            ");//14
+        model.addElement("          frames[ViTriThayThe] = array[i];    ");//15
+        model.addElement("          SetFalse(i);                        ");//16
+        model.addElement("      }                                       ");//17
+        model.addElement("      SwapFrame(i);                           ");//18
+        model.addElement("  }                                           ");//19
+        model.addElement("}                                             ");//20
+        model.addElement("int TimViTriLRU(i, n, frame, a[], frames[])   ");//21
         
         
     }  
-    
     public void addLRUcode()
     {
-        model.addElement("retet");
-        model.addElement("tete");
-        model.addElement("etete");
-        model.addElement("ete");
-        model.addElement("etet");
-        model.addElement("tet");
-        model.addElement("tet");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-        model.addElement("");
-    } 
-    
-    public void FIFO()
-    {     
-        HighLight(0);
-        for (int i = 0; i<frame; i++)
-		frames[i] = -1;
-//        for(int i=0;i<frame;i++)
-//        {
-//            lbArrays[num*(i+1)].setText("x");//+frames[i]);
-//        }
-        HighLight(2);
-	int i, j = 0, k, available;
-        count = 0;
-        //HighLight(3);
-	for (i = 0; i < num; i++)
-	{
-                HighLight(3);
-		available = 0; 
-                //so sanh
-                
-		for (k = 0; k<frame; k++)
-			if (frames[k] == array[i])
-                        {
-                            Move(lbArrays[i],lbArrays[i+num*k]);
-                            available = 1; 
-                            break;
-                        }
-
-                //
-		if (available == 0) 
-		{
-                        SetValue(lbArrays[i+num*1],frames[0]);
-                        SetValue(lbArrays[i+num*2],frames[1]);
-                        SetValue(lbArrays[i+num*3],frames[2]);
-                        frames[j]=array[i];
-			frames[j] = array[i];
-                        HighLight(6);
-                        Move(lbArrays[i],lbArrays[i+num*frame]);
-                        HighLight(9);
-                        SetF(lbArrays[i+num*(frame+1)]);
-                        LightLabel(lbArrays[i+num*(j+1)]);
-                        HighLight(11);
-                        Move(lbArrays[i],lbArrays[i+num*(j+1)]);
-                        LightLabel(lbArrays[i]);
-                        SetValue(lbArrays[i],array[i]);     
-			j = (j + 1) % frame;
-			count++;
-		}
-		else
-		{
-                    HighLight(8);
-                    SetValue(lbArrays[i+num*1],frames[0]);
-                    SetValue(lbArrays[i+num*2],frames[1]);
-                    SetValue(lbArrays[i+num*3],frames[2]);
-                    Move(lbArrays[i],lbArrays[i+num*(k+1)]);
-                    SetT(lbArrays[i+num*(frame+1)]);
-		}
-	}
-        Result();
-    }
+        model.addElement("void LRU( n, frame, a[], frames[])            ");//0
+        model.addElement("{                                             ");//1
+        model.addElement("  for (int i = 0; i < frame; i++)             ");//2
+        model.addElement("      frames[i] = -1;                         ");//3
+        model.addElement("  int VTThayThe = -1;                         ");//4
+        model.addElement("  for (int i = 0; i < num; i++)               ");//5
+        model.addElement("  {                                           ");//6
+        model.addElement("      SwapFrame(i);                           ");//7
+        model.addElement("      int TonTai = 0;                         ");//8
+        model.addElement("      for (int k = 0; k < frame; k++)         ");//9
+        model.addElement("          if (frames[k] == array[i])          ");//10
+        model.addElement("              TonTai = 1;                     ");//11
+        model.addElement("      if (TonTai == 0)                        ");//12
+        model.addElement("      {                                       ");//13
+        model.addElement("          VTThayThe=TimViTriLRU();            ");//14
+        model.addElement("          frames[ViTriThayThe] = array[i];    ");//15
+        model.addElement("          SetFalse(i);                        ");//16
+        model.addElement("      }                                       ");//17
+        model.addElement("      SwapFrame(i);                           ");//18
+        model.addElement("  }                                           ");//19
+        model.addElement("}                                             ");//20
+        model.addElement("int TimViTriLRU(i,n,frame,a[],frames[])       ");//21
+    }    
+    // hiển thị số lỗi trang và thông báo sap xep xong 
     public void Result()
     {
-            curT ++;
-            int cur = curT;
-            threads[cur] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                            if (cur != 0) {
-                                    threads[cur-1].join();
-                            }
-                            btnLoiTrang.setText("Số lỗi trang là: "+count); 
-                            btnLoiTrang.setBackground(Color.GREEN);
-                            Thread.sleep(time);
-                    } catch (Exception e) {
-                    }
-                }
-            });
-            threads[cur].start();
-    }
-    public void Move(JLabel lb1, JLabel lb2) 
-    {
-            curT ++;
-            int cur = curT;
-            threads[cur] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                            if (cur != 0) {
-                                    threads[cur-1].join();
-                            }
-                            if(lb1.getY()<lb2.getY())
-                                while (lb1.getY() < lb2.getY()) {
-                                    lb2.setOpaque(false);
-                                    lb1.setLocation(lb1.getX(), lb1.getY() + 1);
-                                    Thread.sleep(time);
-                            }
-                            if(lb1.getY()>lb2.getY())
-                                while (lb1.getY() > lb2.getY()) {
-                                    lb2.setOpaque(false);
-                                    lb1.setLocation(lb1.getX(), lb1.getY() - 1);
-                                    Thread.sleep(time);
-                            }
-                            Thread.sleep(3*time);
-                            lb1.setLocation(lb2.getX(), lb2.getY());
-                    } catch (Exception e) {
-                    }
-                }
-            });
-            threads[cur].start();
-    }
-    
-    // make the choosen number to light 
-    public void LightLabel(JLabel lb)
-    {
-        curT++;
-
-            int cur = curT;
-            threads[cur] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                            if (cur != 0) {
-                                    threads[cur-1].join();
-                            }
-                            lb.setBackground(Color.YELLOW); // set the color is yellow
-                            Thread.sleep(3*time);
-                    } catch (Exception e) {
-
-                    }
-                }
-            });
-            threads[cur].start();
-    }
-    
-    // if the algorithm return false
-    public void SetF(JLabel lb)
-    {
-        curT++;
-
-            int cur = curT;
-            threads[cur] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                            if (cur != 0) {
-                                    threads[cur-1].join();
-                            }
-                            lb.setText("F");
-                            Thread.sleep(2*time);
-                    } catch (Exception e) {
-
-                    }
-                }
-            });
-            threads[cur].start();
-    }
-    
-    // if the algorithm return true
-    public void SetT(JLabel lb)
-    {
-        curT++;
-
-            int cur = curT;
-            threads[cur] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                            if (cur != 0) {
-                                    threads[cur-1].join();
-                            }
-                            lb.setText("T");
-                            Thread.sleep(time);
-                    } catch (Exception e) {
-
-                    }
-                }
-            });
-            threads[cur].start();
-    }
-    
-    // put the data to compare
-    public void SetValue(JLabel lb, int x) // x is a value of memory cell
-    {
-        curT++;
-
-            int cur = curT;
-            threads[cur] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                            if (cur != 0) {
-                                    threads[cur-1].join();
-                            }
-                            lb.setText(""+x); // assign the value into the memory cell
-                            Thread.sleep(3*time);
-                    } catch (Exception e) {
-
-                    }
-                }
-            });
-            threads[cur].start();
-    } 
-    
-    public void SetLabel()
-    {
-        curT++;
-        int cur = curT;
-        threads[cur] = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                        if (cur != 0) {
-                                threads[cur-1].join();
-                        }
-                        for(int z=0;z<frame;z++)
-                        {
-                            lbArrays[z+num*(frame)].setText(""+frames[z]);
-                        }
-                } catch (Exception e) {
-
-                }
-            }
-        });
-        threads[cur].start();
-    }
-    
-    // hàm khi thực hiện mô phỏng xong
-    public void waitEnd() 
-    {
-    	curT++;	
+        curT ++;
         int cur = curT;
         threads[cur] = new Thread(new Runnable() 
         {
@@ -1048,22 +590,325 @@ public class MainFrame extends JFrame
                     {
                         threads[cur-1].join();
                     }
-                    setState(4);
-                    for (int i = 0; i < num; i++) 
-                    {
-                        //lbArrays[i].setForeground(Color.darkGray);
-                    }
-                    lbPoint1.setText("");
-                    lbPoint2.setText("");
-                    lbPointM.setText("");
-                    //FormCompleteSorted form = new FormCompleteSorted();
-                    //form.setVisible(true);
+                    //
+                    
+                    Thread.sleep(time);
                 } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+        JOptionPane.showMessageDialog(this, "Thực hiện xong!");
+    }
+    // di chuyển label 1 sang 2 theo chiều dọc: di chuyển lb1 đến vị trí lb2
+    public void MoveHorizontal(JLabel[] lb1, int i, JLabel lb2) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    
+                    if(lb1[i].getX()<lb2.getX())
+                        while (lb1[i].getX() < lb2.getX()) 
+                        {
+                            
+                            
+                            //lb2.setOpaque(false);
+                            for(int z = 0; z < frame+1; z++)
+                            {        
+                                lb1[z*num+i].setLocation(lb1[z*num+i].getX()+1, lb1[z*num+i].getY());
+                            }  
+                            PanelChiaTrang.repaint();
+                            Thread.sleep(400);
+                        }
+                    if(lb1[i].getX()>lb2.getX())
+                        while (lb1[i].getY() > lb2.getY()) 
+                        {
+                            //lb2.setOpaque(false);
+                             for(int z = 0; z < frame+1; z++)
+                            {      
+                                lb1[z*num+i].setLocation(lb1[z*num+i].getX()-1, lb1[z*num+i].getY());
+                            }    
+                            PanelChiaTrang.repaint();
+                            Thread.sleep(400);
+                        }
+                    Thread.sleep(3*time);
+                    lb1[i].setLocation(lb2.getX(), lb2.getY());
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    }    
+    // di chuyển label 1 sang 2 theo chiều ngang
+    public void MoveVertical(JLabel lb1, JLabel lb2) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    if(lb1.getX()<lb2.getX())
+                        while (lb1.getX() < lb2.getX()) 
+                        {
+                            //lb2.setOpaque(false);
+                            lb1.setLocation(lb1.getX()+1, lb1.getY());
+                            Thread.sleep(time);
+                        }
+                    if(lb1.getX()>lb2.getX())
+                        while (lb1.getX() > lb2.getX()) 
+                        {
+                            //lb2.setOpaque(false);
+                            lb1.setLocation(lb1.getX()-1, lb1.getY());
+                            Thread.sleep(time);
+                        }
+                    Thread.sleep(3*time);
+                    lb1.setLocation(lb2.getX(), lb2.getY());
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    } 
+    // tô màu ô bị thay thế
+    public void LightLabel(JLabel lb, int i)
+    {
+        curT++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    switch(i)
+                    {
+                        case -1: lb.setBackground(Color.WHITE);break;
+                        case 0: lb.setBackground(Color.YELLOW);break;
+                        case 1: lb.setBackground(Color.GREEN); Thread.sleep(1500);break;
+                    }
+                    
+                    Thread.sleep(500);
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    } 
+    // đặt faile cho trang bị lỗi ô nhớ
+    public void SetFalse(JLabel lb)
+    {
+        curT++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    lb.setText("F");
+                    lbViTriThayThe1.setVisible(false);
+                    Thread.sleep(1000);
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    }   
+    // đặt giá trị cho vị trí frame thay thế
+    public void SetValue(JLabel lb, int value)
+    {
+        curT++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    lb.setText(""+value);
+                    Thread.sleep(500);
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    } 
+    // đặt giá trị vị trí label theo i, s
+    public void SetlbI(int i) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0)
+                    {
+                        threads[cur - 1].join();
+                    }   
+                    lbI.setText("i="+i);
+                    lbI.setBounds(lbArray[i].getX(), lbArray[i].getY()-30, 32, 25);
+                    lbI1.setText("i="+i);
+                    lbI1.setBounds(lbArray_FrameSS[i].getX(), lbArray_FrameSS[0].getY()-30,32,25);
+                    Thread.sleep(1000);
+                } catch (Exception e){}
             }
         });
         threads[cur].start();
     }
     
+    // đặt giá trị vị trí label theo i, s
+    public void SetlbTonTai(int i) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0)
+                    {
+                        threads[cur - 1].join();
+                    }
+                    
+                    switch(i)
+                    {
+                        case -2: lbTonTai.setText("kiểm tra a[i] ??? ");break;
+                        case -1:  lbTonTai.setText("Không tồn tại  ");break;
+                        default: lbTonTai.setText("Tồn tạo tại : "+i+"  ");break;
+                    }
+                   
+                        
+                    //lbTonTai.setBounds(40, lbArray_FrameSS[frame].getY()+32, 100, 25);
+                    Thread.sleep(2000);
+                } catch (Exception e){}
+            }
+        });
+        threads[cur].start();
+    }
+    
+    // đặt giá trị vị trí label theo i, s
+    public void SetlbTrangThai(String s, int i) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0)
+                    {
+                        threads[cur - 1].join();
+                    }   
+                    if(i==-1)
+                    {
+                        status.setText("gdgdg");
+                    }
+                    else
+                    {
+                        status.setText("Nhiệm vụ : "+s);
+                    }
+                    
+                    //lbTonTai.setBounds(40, lbArray_FrameSS[frame].getY()+32, 100, 25);
+                    Thread.sleep(1000);
+                } catch (Exception e){}
+            }
+        });
+        threads[cur].start();
+    }
+    
+    
+    // đặt giá trị vị trí label theo i, s
+    public void SetlbVTTT(int i) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0)
+                    {
+                        threads[cur - 1].join();
+                    }
+                    if(i!=-1)
+                    {
+                        lbViTriThayThe1.setVisible(true);
+                        lbViTriThayThe1.setBounds(55, lbArray_FrameSS[i+1].getY(), 32, 32);
+                    }
+                    
+                    Thread.sleep(1000);
+                } catch (Exception e){}
+            }
+        });
+        threads[cur].start();
+    }
+    // dđặt vị trí của biến J di chuyển theo chiều dọc
+    public void SetlbJ(JLabel lb, int i) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0)
+                    {
+                        threads[cur - 1].join();
+                    }   
+                    lb.setText("i="+i);
+                    lb.setHorizontalAlignment(SwingConstants.CENTER);
+                    lb.setVerticalAlignment(SwingConstants.CENTER);
+                    lb.setBackground(Color.YELLOW);
+                    lb.setBounds(lbArray[i].getX()-50, lbArray[i].getY()+ 34*i, 32, 25);
+                    Thread.sleep(300);
+                } catch (Exception e){}
+            }
+        });
+        threads[cur].start();
+    }    
     // dừng tất cả threads
     public void StopAllThreads() 
     {
@@ -1075,8 +920,7 @@ public class MainFrame extends JFrame
             } catch (Exception e) {}
         }
 	curT = -1;
-    }
-    
+    }   
     // tiếp tục tất cả threads
     public void ResumeAllThreads() 
     {
@@ -1084,11 +928,10 @@ public class MainFrame extends JFrame
         {
             try 
             {
-                threads[i].resume();;
+                threads[i].resume();
             } catch (Exception e) {}
         }
-    }
-    
+    }  
     // tạm dừng tất cả threads
     public void SuspendAllThreads() 
     {
@@ -1099,142 +942,164 @@ public class MainFrame extends JFrame
                 threads[i].suspend();
             } catch (Exception e) {}
         }
-    }
-    
+    }   
     // hàm hiển thị khung mảng ra màn hình
-    public void HienKhungMoPhong()//int[] a,int frame) 
-    {
-        btnLoiTrang.setFont(new Font("Arial", Font.PLAIN, 20));
-        btnLoiTrang.setText("Số lỗi trang là: ");
-        btnLoiTrang.setBounds(300,40,200,40);  
-        PanelChiaTrang.add(btnLoiTrang);                     
-        int frame = 3;
-        /////////////////////////////////////////////
-        int intx=450-42*(num/2);
-        //String str;
+    public void HienKhungMoPhong()
+    {   
+        // tính tọa độ x bắt đầu vẽ để khung hiển thị chính giữa
+        int intx = 200+ 350-34*(num/2);
         
-        for(int i=0; i< num*(frame+2) ;i++ )//((a.length)*(frame+2)); i++ )//lbArrays.length; i++)
+        this.frames             = new int[frame];
+        this.lbArray            = new JLabel[num];
+        this.lbArray_Frame      = new JLabel[num*(this.frame+1)];
+        this.lbArray_Error      = new JLabel[num];
+        // khai báo các biến tạm
+        
+        // label biến tạm i của vòng for
+        lbI = new JLabel();
+        lbI.setHorizontalAlignment(SwingConstants.CENTER);
+        lbI.setVerticalAlignment(SwingConstants.CENTER);
+        lbI.setBackground(Color.YELLOW);
+        lbI.setOpaque(true);
+        PanelMoPhong.add(lbI);
+        
+        lbI1 = new JLabel();
+        lbI1.setHorizontalAlignment(SwingConstants.CENTER);
+        lbI1.setVerticalAlignment(SwingConstants.CENTER);
+        lbI1.setBackground(Color.YELLOW);
+        lbI1.setOpaque(true);
+        PanelMoPhong.add(lbI1);
+        
+        status = new JLabel();
+        status.setHorizontalAlignment(SwingConstants.LEFT);
+        status.setVerticalAlignment(SwingConstants.CENTER);
+        status.setBackground(Color.WHITE);
+        //status.setFont(new Font(20)); new font
+        status.setBorder(BorderFactory.createLineBorder(Color.GREEN)); 
+        status.setOpaque(true);
+        status.setBounds(10, 10, 800, 30);
+        PanelMoPhong.add(status);
+        
+        // label biến tạm j của vòng for
+        lbJ = new JLabel();
+        lbJ.setHorizontalAlignment(SwingConstants.CENTER);
+        lbJ.setVerticalAlignment(SwingConstants.CENTER);
+        lbJ.setBackground(Color.YELLOW);
+        PanelMoPhong.add(lbJ);
+        
+        lbViTriThayThe = new JLabel("Vị trí Thay trang");    
+        lbViTriThayThe.setHorizontalAlignment(SwingConstants.CENTER);
+        lbViTriThayThe.setVerticalAlignment(SwingConstants.CENTER);
+        lbViTriThayThe.setBackground(Color.YELLOW);
+        lbViTriThayThe.setOpaque(true);
+        lbViTriThayThe.setBounds(10, 150, 85, 32);
+        PanelMoPhong.add(lbViTriThayThe);
+        
+        lbTonTai = new JLabel("");
+        lbTonTai.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbTonTai.setVerticalAlignment(SwingConstants.CENTER);
+        lbTonTai.setBackground(Color.GREEN);
+        //lbTonTai.setBounds(10, 150, 120, 32);
+        lbTonTai.setOpaque(true);
+        
+        PanelMoPhong.add(lbTonTai);
+        
+        lbViTriThayThe1 = new JLabel("X"); 
+        lbViTriThayThe1.setHorizontalAlignment(SwingConstants.CENTER);
+        lbViTriThayThe1.setVerticalAlignment(SwingConstants.CENTER);
+        lbViTriThayThe1.setBackground(Color.YELLOW);
+        lbViTriThayThe1.setOpaque(true);
+        PanelMoPhong.add(lbViTriThayThe1);       
+        
+        // hiển thị mảng frames
+        for(int i = 0; i< num*(frame+1); i++ )
         {
-            lbArrays[i]= new JLabel();
-            lbArrays[i].setBounds(intx+42*(i%num), 100+42*(i/num), 40, 40);
-            lbArrays[i].setHorizontalAlignment(SwingConstants.CENTER);
-            lbArrays[i].setVerticalAlignment(SwingConstants.CENTER);
-            lbArrays[i].setBackground(Color.WHITE);
-            lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.black));
-            lbArrays[i].setOpaque(true);
-            PanelChiaTrang.add(lbArrays[i]);
-            PanelChiaTrang.repaint();
-        }
-        
-        
-        // get data into the frame
-        for(int i=0;i<num;i++)
-        {
-           
-            lbArrays[i].setText(""+array[i]);
-            lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            lbArray_Frame[i]= new JLabel();
+            lbArray_Frame[i].setBounds(intx+34*(i%num), 150+34*(i/num), 32, 32);
+            lbArray_Frame[i].setHorizontalAlignment(SwingConstants.CENTER);
+            lbArray_Frame[i].setVerticalAlignment(SwingConstants.CENTER);
+            lbArray_Frame[i].setBackground(Color.WHITE);
+            if((i/num) == 0)
+            {
+               lbArray_Frame[i].setText(""+array[i]);
+               lbArray_Frame[i].setBorder(BorderFactory.createLineBorder(Color.GREEN)); 
+            }
+            else
+            {
+                lbArray_Frame[i].setBorder(BorderFactory.createLineBorder(Color.black));
+            }
+            lbArray_Frame[i].setOpaque(true);
+            PanelMoPhong.add(lbArray_Frame[i]);
             
         }
-        for(int i=num*(frame+1); i<lbArrays.length; i++)
-        {
-            lbArrays[i].setBorder(BorderFactory.createLineBorder(Color.blue));
+        // hiển thị mảng lỗi trang
+        for(int i=0;i<num;i++)
+        {    
+            lbArray_Error[i]= new JLabel();
+            lbArray_Error[i].setText("");
+            lbArray_Error[i].setBounds(intx + 34*(i%num),150 + 34*(frame+1) , 32, 32);
+            lbArray_Error[i].setHorizontalAlignment(SwingConstants.CENTER);
+            lbArray_Error[i].setVerticalAlignment(SwingConstants.CENTER);
+            lbArray_Error[i].setBorder(BorderFactory.createLineBorder(Color.blue));
+            lbArray_Error[i].setBackground(Color.WHITE);
+            lbArray_Error[i].setOpaque(true);
+            PanelMoPhong.add(lbArray_Error[i]);      
         }
-        for(int i=0; i<num; i++)
-        {
-            lbArray_page[i]= new JLabel();
-            lbArray_page[i].setBounds(intx+42*i, 100, 40, 40);
-            lbArray_page[i].setHorizontalAlignment(SwingConstants.CENTER);
-            lbArray_page[i].setVerticalAlignment(SwingConstants.CENTER);
-            lbArray_page[i].setBackground(Color.WHITE);
-            lbArray_page[i].setText(""+array[i]);
-            lbArray_page[i].setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            lbArray_page[i].setOpaque(true);
-            PanelChiaTrang.add(lbArray_page[i]);
-            PanelChiaTrang.repaint();
+        
+        // Hiển thị mảng tham chiếu ban đầu
+        for(int i = 0; i < num ;i++)
+        {  
+            lbArray[i] = new JLabel();
+            lbArray[i].setText(""+array[i]);
+            lbArray[i].setHorizontalAlignment(SwingConstants.CENTER);
+            lbArray[i].setVerticalAlignment(SwingConstants.CENTER);
+            lbArray[i].setBounds(intx+34*(i%num), 150+34*(i/num), 32, 32);
+            lbArray[i].setBorder(BorderFactory.createLineBorder(Color.RED));
+            lbArray[i].setBackground(Color.WHITE);
+            lbArray[i].setOpaque(true);
+            PanelMoPhong.add(lbArray[i]);
+            
         }
-    }
-    
+        // khai báo frame vị trí so sánh
+        lbArray_FrameSS = new JLabel[frame+1];
+        for(int i = 0; i < frame+1 ;i++)
+        {  
+            lbArray_FrameSS[i] = new JLabel();
+            lbArray_FrameSS[i].setHorizontalAlignment(SwingConstants.CENTER);
+            lbArray_FrameSS[i].setVerticalAlignment(SwingConstants.CENTER);
+            lbArray_FrameSS[i].setBounds(100, 150+34*i, 32, 32);
+            lbArray_FrameSS[i].setBorder(BorderFactory.createLineBorder(Color.RED));
+            lbArray_FrameSS[i].setBackground(Color.WHITE);
+            lbArray_FrameSS[i].setOpaque(true);
+            PanelMoPhong.add(lbArray_FrameSS[i]);      
+        }
+        
+        // khai báo frame vị trí so sánh
+        STT = new JLabel[frame];
+        for(int i = 0; i < frame ;i++)
+        {  
+            STT[i] = new JLabel(""+i);
+            STT[i].setHorizontalAlignment(SwingConstants.CENTER);
+            STT[i].setVerticalAlignment(SwingConstants.CENTER);
+            STT[i].setBounds(10, 150+34*(i+1), 32, 32);
+            STT[i].setBorder(BorderFactory.createLineBorder(Color.RED));
+            STT[i].setBackground(Color.WHITE);
+            STT[i].setOpaque(true);
+            PanelMoPhong.add(STT[i]);      
+        }
+        lbTonTai.setBounds(10, lbArray_FrameSS[frame].getY()+34, 120, 32);
+        PanelChiaTrang.repaint();
+    }   
     // hàm xóa khung mô phỏng
     public void XoaKhungMoPhong() 
     {
-        for (int i = 0; i < num*(frame+2); i++) 
-        {
-            //lbArrays[i].setVisible(false);
-            PanelChiaTrang.remove(lbArrays[i]);
-        }
-        for(int i=0; i<num; i++)
-        {
-            PanelChiaTrang.remove(lbArray_page[i]);
-        }
-        PanelChiaTrang.remove(btnLoiTrang);
-        for (int i = 0; i < curT; i++) 
-        {
-            try 
-            {
-                threads[i].interrupt();
-            } 
-            catch (Exception e) {}
-        }
-        curT = -1;
-
+        PanelMoPhong.removeAll();
+        // xóa tất cả các threads đang chạy
+        StopAllThreads(); 
+        // vẽ lại panel
         PanelChiaTrang.revalidate();
         PanelChiaTrang.repaint();
-    }
-    
-    // thread đặt lại vị trí cho mảng
-    public void threadReLocate() 
-    {
-    	curT++;	
-        int cur = curT;
-        threads[cur] = new Thread(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                try 
-                {
-                    if (cur != 0) 
-                    {
-                        threads[cur-1].join();
-                    }
-                    reLocate();
-                } catch (Exception e) {}
-            }
-        });
-        threads[cur].start();
-    }
-    
-    // hàm đặt lại vị trí của mảng
-    public void reLocate() 
-    {
-    	for (int i = 0; i < num; i++) 
-        {
-            //set location label
-            if (i == 0)
-                lbArrays[i].setLocation(((int) ((18 - num) * 0.5) * 70) + 100, 150);
-            else
-                lbArrays[i].setLocation(lbArrays[i-1].getX() + 70, 150);
-    	}
-    }
-    
-    // đặt background label khi di chuyển
-    public void setBackgroundMoving(JLabel lb1, JLabel lb2) {
-    	lb1.setOpaque(true);
-    	lb2.setOpaque(true);
-    	
-    	lb1.setBackground(SystemColor.ORANGE);
-    	lb2.setBackground(SystemColor.ORANGE);
-    }
-    
-    // đặt background label khi di chuyển xong
-    public void setBackgroundDone(JLabel lb1, JLabel lb2) 
-    {
-    	lb1.setOpaque(true);
-    	lb2.setOpaque(true);
-    	lb1.setBackground(SystemColor.inactiveCaption);
-    	lb2.setBackground(SystemColor.inactiveCaption);
-    }
-    
+    }  
     // highLight dòng code đang thực hiện (0 ... n)
     public void HighLight(int line) 
     {
@@ -1250,15 +1115,239 @@ public class MainFrame extends JFrame
                     if (cur != 0) 
                     {
                         threads[cur-1].join();
-                    }
-                    lsCode.setSelectedIndex(line);
-                    // Tu cuon den dong dang highlight
+                    }   
+                    lsCode.setSelectedIndex(line); 
                     lsCode.ensureIndexIsVisible(line); 
-                    Thread.sleep(2*time);
+                    
+                    Thread.sleep(500);
                 } catch (Exception e) {}
             }
         });
         threads[cur].start();
+    }   
+    // hàm lấy dữ liệu từ frame Input
+    public void setData(int[] array, int frame)
+    {
+        XoaKhungMoPhong();
+        // đặt lại giá trị, khởi tạo
+        this.num                = array.length;
+        this.frame              = frame;
+        this.array              = new int[num];
+        System.arraycopy( array, 0, this.array, 0, array.length );
+        HienKhungMoPhong();
     }
+    
+    // di chuyển frame đang so sanh ra vị trí so sánh nếu x= -1 ; ngược lại x=1;
+    public void SwapFrame(int i, int x) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    Thread.sleep(500);
+                    if(x==-1)
+                    while(lbArray_Frame[i].getX() > lbArray_FrameSS[0].getX())
+                    {
+                        for(int z=0;z<frame+1;z++)
+                        {
+                            lbArray_Frame[z*num+i].setLocation(lbArray_Frame[z*num+i].getX()- 1, lbArray_FrameSS[z].getY());
+                        }
+                        Thread.sleep(30);
+                    }
+                    if(x==1)
+                    while(lbArray_Frame[i].getX() < 200+ 350-34*(num/2)+34*(i%num))
+                    {
+                        for(int z=0;z<frame+1;z++)
+                        {
+                            lbArray_Frame[z*num+i].setLocation(lbArray_Frame[z*num+i].getX() + 1, lbArray_FrameSS[z].getY());                           
+                        }
+                        Thread.sleep(30);
+                    }
+                   
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    }    
+    
+    // di chuyển frame tìm kiếm ; với x là vị trí tồn tại -1, 0, 1, 2,....
+    public void SwapFrameTimKiem(int i, int x) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    Thread.sleep(500);
+                    if(x==-1)
+                    {
+                        while(lbArray_Frame[i].getY() < lbArray_FrameSS[frame].getY())
+                        {
+                            lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
+                            Thread.sleep(50);
+                        }
+                    }
+                    else
+                    {
+                        while(lbArray_Frame[i].getY() < lbArray_FrameSS[x+1].getY())
+                        {
+                            lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
+                            Thread.sleep(50);
+                        }
+                    }
+                    Thread.sleep(300);
+                    // đưa lbArray_Frame[i] về vị trí cũ
+                    lbArray_Frame[i].setLocation(lbArray_FrameSS[0].getX(), lbArray_FrameSS[0].getY());  
+                   
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    }   
+    
+     // di chuyển frame thay thế trang
+    public void SwapFrameThayThe(int i, int vttt) 
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    Thread.sleep(500);
+                    while(lbArray_Frame[i].getY() < lbArray_FrameSS[vttt+1].getY())
+                    {
+                        lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
+                        Thread.sleep(50);
+                    }
+                    Thread.sleep(300);
+                    // đưa lbArray_Frame[i] về vị trí cũ
+                    lbArray_Frame[i].setLocation(lbArray_FrameSS[0].getX(), lbArray_FrameSS[0].getY());  
+                   
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    }   
+    
+    public void FIFO()
+    {   
+        HighLight(1);
+        // gán giá trị frame khởi đầu = -1 tương đương rỗng
+        SetlbTrangThai("khởi tạo fram ban đầu", 0);     
+        for (int i = 0; i < frame; i++)
+        {
+            HighLight(2);
+            frames[i] = -1;
+            SetValue( lbArray_Frame[(i+1)*num], -1 );
+            HighLight(3);
+        }	
+        HighLight(4);	
+	int ViTriThayThe = -1;
+        // khởi tạo vị trí thay thế ban đầu = 0;
+        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
+        SetlbVTTT(ViTriThayThe);
+	for (int i = 0; i < num; i++)
+	{
+            HighLight(5);
+            // gán frame mới bằng frame cũ lbArray_Frame[ 
+            if(i<(num))
+            {
+                for(int k=0;k<frame;k++)
+                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
+            }
+            // gán biến I 
+            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
+            SetlbI(i);
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            HighLight(7);
+            SwapFrame(i,-1);
+            // kiểm tra a[i] đã tồn tại trong frame chưa
+            int TonTai = 0;
+            SetlbTonTai(-2);
+            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
+            int temp = -1;
+            for (int k = 0; k < frame; k++)
+            {
+                HighLight(9);
+                if (frames[k] == array[i])
+                {    
+                    TonTai = 1;
+                    SwapFrameTimKiem(i,k); 
+                    HighLight(10);
+                    SetlbTonTai(k);
+                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
+                    temp=k;
+                    break;
+                }
+                
+            }
+            if(temp!=-1)
+            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
+            if(TonTai==0)
+            {
+                SwapFrameTimKiem(i,-1);
+                SetlbTonTai(-1);
+            }
+
+            
+            HighLight(12);
+            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
+            if (TonTai == 0) 
+            {
+                
+                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
+                HighLight(14);    
+                // tính lại vị trí thay thế
+                ViTriThayThe = (ViTriThayThe + 1) % frame;
+                SetlbVTTT(ViTriThayThe);
+                // swap frame[ThayThe] = a[i] 
+                HighLight(15); 
+                frames[ViTriThayThe] = array[i];
+                SetlbTrangThai("Thay thế trang ô nhớ", 0);
+                SwapFrameThayThe(i,ViTriThayThe);
+                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
+                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
+                   
+                // đánh dấu lỗi trang tại frame-error[i];
+                SetlbTrangThai("Đánh dấu lỗi trang", 0);
+                HighLight(16);
+                SetFalse(lbArray_Error[i]);
+            }
+            // chuyển frame so sánh về vị trí cũ
+            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
+            HighLight(18);
+            SwapFrame(i,1);
+            
+            PanelMoPhong.repaint();
+            HighLight(19);
+        }
+        HighLight(20);
+        SetlbTrangThai("Hoàn thành mô phỏng", 0);
+    }            
 }             
                 

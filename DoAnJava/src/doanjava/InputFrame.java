@@ -9,12 +9,12 @@ import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,7 +32,7 @@ import javax.swing.text.NumberFormatter;
  */
 
 
-public class InputFrame extends JFrame implements ItemListener
+public class InputFrame extends JFrame
 {
     
     private static final long serialVersionUID = 1L;
@@ -42,8 +42,7 @@ public class InputFrame extends JFrame implements ItemListener
     private final JSpinner spTrang;
     private final JCheckBox cbRandom;
     private int num = 0,frame = 0, Trang = 0;
-    public static int[] arrays; 
-    public static int[] arraySaveData;
+    private int[] arrays;
     private JLabel[] lbArrays;
     private JSpinner[] InputArrays;
     private final JButton btnOK; 
@@ -52,11 +51,23 @@ public class InputFrame extends JFrame implements ItemListener
     private final SpinnerModel sm1;
     private final SpinnerModel sm2;
     private final SpinnerModel sm3;
-    
+    private final Random rand = new Random();
 
 
     public InputFrame()
     {
+        addWindowListener( new WindowAdapter() 
+        {
+            public void WindowClosing(WindowEvent e)
+            {
+                System.exit(0);
+            }
+        }
+        
+        );
+        //setVisible(modal);
+        //setModal(true);
+       
         setTitle("Nhập dữ liệu");
         setResizable(false);
 	setSize(500,400);
@@ -102,26 +113,23 @@ public class InputFrame extends JFrame implements ItemListener
         
         btReSet = new JButton("Đặt lại");
 	btReSet.setBackground(SystemColor.activeCaption);
-        btReSet.setBounds(380, 10, 80, 25);
+        btReSet.setBounds(380, 10, 100, 25);
 	contentPane.add(btReSet);
         btReSet.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
             {
-		for(int i = 0;i<num;i++){
-                    InputArrays[i].setValue(0);
-                }
+		ResetArray();
             }
 	});
         
         cbRandom = new JCheckBox("Ngẫu nhiên",false);
         cbRandom.setBounds(290, 10, 80, 25);
-        contentPane.add(cbRandom);	
-        cbRandom.addItemListener(this);
-        
+        contentPane.add(cbRandom);
+		
 	btTaoMang = new JButton("Tạo Mảng");
 	btTaoMang.setBackground(SystemColor.activeCaption);
-        btTaoMang.setBounds(290, 40, 170, 25);
+        btTaoMang.setBounds(290, 40, 190, 25);
 	contentPane.add(btTaoMang);
         btTaoMang.addActionListener(new ActionListener() 
         {
@@ -134,7 +142,7 @@ public class InputFrame extends JFrame implements ItemListener
 		
 	btnOK = new JButton("Xác nhận");
         btnOK.setBackground(SystemColor.activeCaption);
-	btnOK.setBounds(290, 70, 170, 25);
+	btnOK.setBounds(290, 70, 190, 25);
 	contentPane.add(btnOK);
 	btnOK.addActionListener(new ActionListener() 
         {
@@ -143,7 +151,7 @@ public class InputFrame extends JFrame implements ItemListener
                 OK();
             }
 	});
-        
+         //setVisible(true);
     }
 	
     public void CreateArray() 
@@ -157,52 +165,35 @@ public class InputFrame extends JFrame implements ItemListener
         
         for (int i = 0; i < num; i++) 
         { 
-           
+            int  n = rand.nextInt(Trang);
             lbArrays[i] = new JLabel("A[" + (i+1) + "]:");
-   
-            SpinnerModel smValue = new SpinnerNumberModel(0,0,20,1);
-            InputArrays[i] = new JSpinner(smValue);
+            if(cbRandom.isSelected()== true)
+            {
+                SpinnerModel smValue = new SpinnerNumberModel(n, 0,Trang-1 , 1);
+                InputArrays[i] = new JSpinner(smValue);
+            }
+            else
+            {
+                SpinnerModel smValue = new SpinnerNumberModel(0, 0,Trang , 1);
+                InputArrays[i] = new JSpinner(smValue);
+            }
             JFormattedTextField txt = ((JSpinner.NumberEditor) InputArrays[i].getEditor()).getTextField();
             ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(true);
             contentPane.add(lbArrays[i]);
             contentPane.add(InputArrays[i]);
             lbArrays[i].setSize(40,30);
-            
-            
             if (i == 0 || i == 5 || i == 10 || i == 15) 
                     lbArrays[i].setLocation(10, 100+ 40*(i+1)/3);
             else
                     lbArrays[i].setLocation(lbArrays[i-1].getX()+95, lbArrays[i-1].getY());
             InputArrays[i].setSize(40,30);
             InputArrays[i].setLocation(lbArrays[i].getX() + 40, lbArrays[i].getY());
-           // arraySaveData[i] = (int) InputArrays[i].getValue();
-            
-            int rand = rand(0, 100);
-           if(cbRandom.isSelected()==true)
-                InputArrays[i].setValue(rand);
-                
         }
         contentPane.setVisible(true);
         contentPane.validate();
         contentPane.repaint();
     }
 
-    // ham bat su kien cho Checkbox Random. (Phai co)
-    @Override
-       public void itemStateChanged(ItemEvent e){         
-        }
-    //tao mang random cho mang
-    public static int rand(int min, int max){
-        try{
-            Random rn = new Random();
-            int range = max - min + 1;
-            int randomNum = min + rn.nextInt(range);
-            return randomNum;
-        }catch(Exception e){
-            e.printStackTrace();
-            return -1;
-        }
-    }
     public void ResetArray() 
     {
         if(lbArrays != null )
@@ -225,29 +216,22 @@ public class InputFrame extends JFrame implements ItemListener
 
     public void OK() 
     {
-        
-        
         if (num != 0) 
         {
             arrays = new int[num];
             for (int i = 0; i < num; i++) 
             {
-                arrays[i] = (int) InputArrays[i].getValue();      
+                arrays[i] = (int) InputArrays[i].getValue();
             }
-            
             Frame[] listFrames = Frame.getFrames();
-            //((MainFrame) listFrames[0]).setData(arrays,num,frame);
-            
+            ((MainFrame) listFrames[0]).setData(arrays, frame);
             JOptionPane.showMessageDialog(this, "Đã tạo dữ liệu mảng thành công!");
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-            
         }
         else 
         {
             JOptionPane.showMessageDialog(this, "Chưa tạo được dữ liệu mảng!");
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-        }
-        MainFrame mf = new MainFrame();
-        mf.setData(arrays);
+        }       
     }
 }
