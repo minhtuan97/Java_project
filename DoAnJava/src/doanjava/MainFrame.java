@@ -126,11 +126,11 @@ public class MainFrame extends JFrame
                 }
                 if(rdOPT.isSelected())
                 {
-                    //OPT();
+                    OPT();
                 }
                 if(rdLRU.isSelected())
                 {
-                    //LRU();
+                    LRU();
                 }
             }
         });        
@@ -524,7 +524,7 @@ public class MainFrame extends JFrame
     }    
     public void addOPTcode()
     {
-        model.addElement("void OTP( n, frame, a[], frames[])            ");//0
+        model.addElement("void OPT( n, frame, a[], frames[])            ");//0
         model.addElement("{                                             ");//1
         model.addElement("  for (int i = 0; i < frame; i++)             ");//2
         model.addElement("      frames[i] = -1;                         ");//3
@@ -538,16 +538,56 @@ public class MainFrame extends JFrame
         model.addElement("              TonTai = 1;                     ");//11
         model.addElement("      if (TonTai == 0)                        ");//12
         model.addElement("      {                                       ");//13
-        model.addElement("          VTThayThe=TimViTriOPT();            ");//14
+        model.addElement("          VTThayThe=TimViTriOPT(i, n, frame, int[] a, int frames[]);");//14
         model.addElement("          frames[ViTriThayThe] = array[i];    ");//15
         model.addElement("          SetFalse(i);                        ");//16
         model.addElement("      }                                       ");//17
         model.addElement("      SwapFrame(i);                           ");//18
         model.addElement("  }                                           ");//19
         model.addElement("}                                             ");//20
-        model.addElement("int TimViTriLRU(i, n, frame, a[], frames[])   ");//21
         
-        
+        model.addElement("int TimViTriOP(int i, int n, int Frame, int[] a, int[]Frames");//21
+        model.addElement("{                                             ");//22
+        model.addElement("  for (int f = 0; f < Frame; f++)             ");//23
+        model.addElement("  {                                           ");//24
+        model.addElement("      if (Frames[f] == -1)                    ");//25
+        model.addElement("          return f;                           ");//26
+        model.addElement("  }                                           ");//27
+        model.addElement("  int value = -1;                             ");//28
+        model.addElement("  int[] m= new int[50];                       ");//29
+        model.addElement("  for (int z = 0; z < 50; z++)                ");//30
+        model.addElement("  {                                           ");//31
+        model.addElement("      m[z] = -1;                              ");//32
+        model.addElement("  }                                           ");//33
+        model.addElement("  for (int t = 0; t < Frame; t++)             ");//34
+        model.addElement("  {                                           ");//35
+        model.addElement("      int kt = 0;                             ");//36
+        model.addElement("      for (int z = i + 1; z < n; z++)         ");//37
+        model.addElement("      {                                       ");//38
+        model.addElement("          if (Frames[t] == a[z])              ");//39
+        model.addElement("          {                                   ");//40
+        model.addElement("              kt = 1;                         ");//41
+        model.addElement("              m[z] = frames[t];               ");//42
+        model.addElement("              break;                          ");//43
+        model.addElement("          }                                   ");//44
+        model.addElement("       }                                      ");//45
+        model.addElement("       if (kt == 0)                           ");//46
+        model.addElement("          return t;                           ");//47
+        model.addElement("  }                                           ");//48
+        model.addElement("  for (int z = 49; z >= 0; z--)               ");//49
+        model.addElement("  {                                           ");//50
+        model.addElement("      if (m[z] != -1)                         ");//51
+        model.addElement("      {                                       ");//52
+        model.addElement("          value = m[z];                       ");//53
+        model.addElement("          break;                              ");//54
+        model.addElement("      }                                       ");//55
+        model.addElement("  }                                           ");//56
+        model.addElement("  for (int z = 0; z < Frame; z++)             ");//57      
+        model.addElement("  {                                           ");//58
+        model.addElement("      if (value == Frames[z])                 ");//59  
+        model.addElement("          return z;                           ");//60
+        model.addElement("  }                                           ");//61  
+        model.addElement("  return -1;                                  ");//62
     }  
     public void addLRUcode()
     {
@@ -573,6 +613,26 @@ public class MainFrame extends JFrame
         model.addElement("  }                                           ");//19
         model.addElement("}                                             ");//20
         model.addElement("int TimViTriLRU(i,n,frame,a[],frames[])       ");//21
+        model.addElement("{                                             ");//22
+        model.addElement("  for (int j = 0; j < frame; j++)             ");//23
+        model.addElement("      if (frames[j] == -1)                    ");//24
+        model.addElement("          return j;                           ");//25
+        model.addElement("  int value;                                  ");//26
+        model.addElement("  int[] m = new int[i];                       ");//27
+        model.addElement("  for (int j = 0; j < i ; j++)                ");//28
+        model.addElement("      m[j] = -1;                              ");//29
+        model.addElement("  for (int j = 0; j < frame; j++)             ");//30
+        model.addElement("      for (int z = i - 1; z >= 0; z--)        ");//31
+        model.addElement("          if (frames[j] == array[z])          ");//32
+        model.addElement("             { m[z] = frames[j]; break; }     ");//33
+        model.addElement("  for (int j = 0; j < i ; j++)                ");//34
+        model.addElement("      if (m[j] != -1)                         ");//35
+        model.addElement("          { value = m[j]; break; }            ");//36
+        model.addElement("  for (int j = 0; j < frame; j++)             ");//37
+        model.addElement("      if (value == frames[j])                 ");//38
+        model.addElement("          return j;                           ");//39
+        model.addElement("  return 0;                                   ");//40
+        model.addElement("}                                             ");//41
     }    
     // hiển thị số lỗi trang và thông báo sap xep xong 
     public void Result()
@@ -627,7 +687,7 @@ public class MainFrame extends JFrame
                                 lb1[z*num+i].setLocation(lb1[z*num+i].getX()+1, lb1[z*num+i].getY());
                             }  
                             PanelChiaTrang.repaint();
-                            Thread.sleep(400);
+                            Thread.sleep(100);
                         }
                     if(lb1[i].getX()>lb2.getX())
                         while (lb1[i].getY() > lb2.getY()) 
@@ -638,9 +698,9 @@ public class MainFrame extends JFrame
                                 lb1[z*num+i].setLocation(lb1[z*num+i].getX()-1, lb1[z*num+i].getY());
                             }    
                             PanelChiaTrang.repaint();
-                            Thread.sleep(400);
+                            Thread.sleep(100);
                         }
-                    Thread.sleep(3*time);
+                    Thread.sleep(2*time);
                     lb1[i].setLocation(lb2.getX(), lb2.getY());
                 } catch (Exception e) {}
             }
@@ -677,7 +737,7 @@ public class MainFrame extends JFrame
                             lb1.setLocation(lb1.getX()-1, lb1.getY());
                             Thread.sleep(time);
                         }
-                    Thread.sleep(3*time);
+                    Thread.sleep(2*time);
                     lb1.setLocation(lb2.getX(), lb2.getY());
                 } catch (Exception e) {}
             }
@@ -704,10 +764,10 @@ public class MainFrame extends JFrame
                     {
                         case -1: lb.setBackground(Color.WHITE);break;
                         case 0: lb.setBackground(Color.YELLOW);break;
-                        case 1: lb.setBackground(Color.GREEN); Thread.sleep(1500);break;
+                        case 1: lb.setBackground(Color.GREEN); 
+                        Thread.sleep(1000);break;
                     }
-                    
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (Exception e) {}
             }
         });
@@ -731,7 +791,7 @@ public class MainFrame extends JFrame
                     }
                     lb.setText("F");
                     lbViTriThayThe1.setVisible(false);
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (Exception e) {}
             }
         });
@@ -754,7 +814,7 @@ public class MainFrame extends JFrame
                         threads[cur-1].join();
                     }
                     lb.setText(""+value);
-                    Thread.sleep(500);
+                    Thread.sleep(300);
                 } catch (Exception e) {}
             }
         });
@@ -780,7 +840,7 @@ public class MainFrame extends JFrame
                     lbI.setBounds(lbArray[i].getX(), lbArray[i].getY()-30, 32, 25);
                     lbI1.setText("i="+i);
                     lbI1.setBounds(lbArray_FrameSS[i].getX(), lbArray_FrameSS[0].getY()-30,32,25);
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (Exception e){}
             }
         });
@@ -813,7 +873,7 @@ public class MainFrame extends JFrame
                    
                         
                     //lbTonTai.setBounds(40, lbArray_FrameSS[frame].getY()+32, 100, 25);
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (Exception e){}
             }
         });
@@ -846,7 +906,7 @@ public class MainFrame extends JFrame
                     }
                     
                     //lbTonTai.setBounds(40, lbArray_FrameSS[frame].getY()+32, 100, 25);
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (Exception e){}
             }
         });
@@ -876,7 +936,7 @@ public class MainFrame extends JFrame
                         lbViTriThayThe1.setBounds(55, lbArray_FrameSS[i+1].getY(), 32, 32);
                     }
                     
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (Exception e){}
             }
         });
@@ -903,7 +963,7 @@ public class MainFrame extends JFrame
                     lb.setVerticalAlignment(SwingConstants.CENTER);
                     lb.setBackground(Color.YELLOW);
                     lb.setBounds(lbArray[i].getX()-50, lbArray[i].getY()+ 34*i, 32, 25);
-                    Thread.sleep(300);
+                    Thread.sleep(200);
                 } catch (Exception e){}
             }
         });
@@ -1119,7 +1179,7 @@ public class MainFrame extends JFrame
                     lsCode.setSelectedIndex(line); 
                     lsCode.ensureIndexIsVisible(line); 
                     
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (Exception e) {}
             }
         });
@@ -1201,7 +1261,7 @@ public class MainFrame extends JFrame
                         while(lbArray_Frame[i].getY() < lbArray_FrameSS[frame].getY())
                         {
                             lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
-                            Thread.sleep(50);
+                            Thread.sleep(30);
                         }
                     }
                     else
@@ -1209,10 +1269,10 @@ public class MainFrame extends JFrame
                         while(lbArray_Frame[i].getY() < lbArray_FrameSS[x+1].getY())
                         {
                             lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
-                            Thread.sleep(50);
+                            Thread.sleep(30);
                         }
                     }
-                    Thread.sleep(300);
+                    Thread.sleep(100);
                     // đưa lbArray_Frame[i] về vị trí cũ
                     lbArray_Frame[i].setLocation(lbArray_FrameSS[0].getX(), lbArray_FrameSS[0].getY());  
                    
@@ -1238,13 +1298,13 @@ public class MainFrame extends JFrame
                     {
                         threads[cur-1].join();
                     }
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                     while(lbArray_Frame[i].getY() < lbArray_FrameSS[vttt+1].getY())
                     {
                         lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
-                        Thread.sleep(50);
+                        Thread.sleep(30);
                     }
-                    Thread.sleep(300);
+                    Thread.sleep(200);
                     // đưa lbArray_Frame[i] về vị trí cũ
                     lbArray_Frame[i].setLocation(lbArray_FrameSS[0].getX(), lbArray_FrameSS[0].getY());  
                    
@@ -1348,6 +1408,508 @@ public class MainFrame extends JFrame
         }
         HighLight(20);
         SetlbTrangThai("Hoàn thành mô phỏng", 0);
-    }            
-}             
+    }
+    public void OPT()
+    {
+        HighLight(1);
+        // gán giá trị frame khởi đầu = -1 tương đương rỗng
+        SetlbTrangThai("khởi tạo fram ban đầu", 0);    
+        for (int i = 0; i < frame; i++)
+        {
+            HighLight(2);
+            frames[i] = -1;
+            SetValue( lbArray_Frame[(i+1)*num], -1 );
+            HighLight(3);
+        }
+        HighLight(4);	
+	int ViTriThayThe = -1;
+        // khởi tạo vị trí thay thế ban đầu = 0;
+        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
+        SetlbVTTT(ViTriThayThe);
+	int i, j, available, count = 0;
+	for (i = 0; i < num; i++)
+	{
+            
+            HighLight(5);
+            // gán frame mới bằng frame cũ lbArray_Frame[ 
+            if(i<(num))
+            {
+                for(int k=0;k<frame;k++)
+                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
+            }
+            // gán biến I 
+            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
+            SetlbI(i);
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            HighLight(7);
+            Setbg(i);
+            SwapFrame(i,-1);
+            // kiểm tra a[i] đã tồn tại trong frame chưa
+            int TonTai = 0;
+            SetlbTonTai(-2);
+            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
+            int temp = -1;
+            for (int k = 0; k < frame; k++)
+            {
+                HighLight(9);
+                if (frames[k] == array[i])
+                {    
+                    TonTai = 1;
+                    SwapFrameTimKiem(i,k); 
+                    HighLight(10);
+                    SetlbTonTai(k);
+                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
+                    temp=k;
+                    break;
+                }
+                
+            }
+            if(temp!=-1)
+            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
+            if(TonTai==0)
+            {
+                SwapFrameTimKiem(i,-1);
+                SetlbTonTai(-1);
+            }
+            
+            HighLight(12);
+            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
+            if (TonTai == 0) 
+            {
+                
+                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
+                HighLight(14);    
+                // tính lại vị trí thay thế
+                ViTriThayThe = TimViTriOTP(i, num, frame, array, frames);
+                SetlbVTTT(ViTriThayThe);
+                // swap frame[ThayThe] = a[i] 
+                HighLight(15); 
+                frames[ViTriThayThe] = array[i];
+                SetlbTrangThai("Thay thế trang ô nhớ", 0);
+                SwapFrameThayThe(i,ViTriThayThe);
+                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
+                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
+                   
+                // đánh dấu lỗi trang tại frame-error[i];
+                SetlbTrangThai("Đánh dấu lỗi trang", 0);
+                HighLight(16);
+                SetFalse(lbArray_Error[i]);
+            }
+            // chuyển frame so sánh về vị trí cũ
+            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
+            HighLight(18);
+            SwapFrame(i,1);
+            
+            PanelMoPhong.repaint();
+            HighLight(19);
+            
+	}
+        HighLight(20);
+        SetlbTrangThai("Hoàn thành mô phỏng", 0);
+    }
+    public int TimViTriOTP(int i, int n, int Frame, int[] a, int[] Frames)
+    {
+        HighLight(23);
+	for (int f = 0; f < Frame; f++)
+	{
+            SetlbTrangThai("Kiểm tra có tồn tại frame trống", 0);
+            HighLight(25);
+            if (Frames[f] == -1)
+            {
+                SwapFrameTimKiem(i,f);
+                SetlbTonTai(f);
+                SetlbTrangThai("Tìm thấy Frame trống", 0);
+                HighLight(26);
+                return f;
+            }
+	}
+        HighLight(28);
+	int value = -1;
+        HighLight(29);
+	int[] m= new int[50];
+        HighLight(30);
+	for (int z = 0; z < 50; z++)
+	{
+            HighLight(32);
+            m[z] = -1;
+	}
+        HighLight(34);
+	for (int t = 0; t < Frame; t++)
+	{
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            SwapFrame_dt(lbArray_Frame[i+num*(t+1)],i);
+            HighLight(36);
+            int kt = 0;
+            HighLight(37);
+            SetlbTrangThai("Kiểm tra tồn tại của frame ở tương lai", 0);
+            for (int z = i + 1; z < n; z++)
+            {
+                HighLight(39);
+		if (Frames[t] == a[z])
+		{
+                    HighLight(41);
+                    kt = 1;
+                    HighLight(42);
+                    m[z] = frames[t];
+                    HighLight(43);
+                    break;
+		}
+                if(z<n-1)
+                {
+
+                    Move(lbArray_Frame[i+num*(t+1)],1);
+                }
+                
+            }
+            HighLight(46);
+            SetlbTrangThai("Di chuyển frame về trị trí so sánh", 0);
+            if (kt == 0)
+            {
+                Move_back(i);
+                HighLight(47);
+                return t;
+            }
+	}
+        HighLight(49);
+	for (int z = 49; z >= 0; z--)
+	{
+            HighLight(51);
+            if (m[z] != -1)
+            {
+                HighLight(53);
+                value = m[z];
+                HighLight(54);
+		break;
+            }
+	}
+        HighLight(57);
+	for (int z = 0; z < Frame; z++)
+	{
+            HighLight(59);
+            if (value == Frames[z])
+            {
+                LightLabel(lbArray_Frame[i+num*(z+1)],0);
+                HighLight(60);
+                Move_back(i);
+                return z;
+            }
+	}
+        HighLight(62);
+        return -1;
+    }
+    public void SwapFrame_dt(JLabel lb1, int i)
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (cur != 0)
+                        threads[cur - 1].join();
+                    int m,n,c,d;
+                    m=lb1.getX();
+                    n=lb1.getY();
+                    c=lbArray_Frame[i+1].getX();
+                    d=lbArray_Frame[i+1].getY()-34;
+                    while(lb1.getX()<=c)
+                    {
+                        int k=(int)(lb1.getX()+1-m)*(d-n)/(c-m)+n;
+                        lb1.setLocation(lb1.getX()+1,k);
+                        PanelChiaTrang.repaint();
+                        Thread.sleep(10);
+                    }
+
+                } catch (Exception e) {
+                }
+            }
+        });
+        threads[cur].start();
+    }
+    public void Move(JLabel lb1, int i)
+    {
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (cur != 0)
+                        threads[cur - 1].join();
+                    int k=lb1.getX()+34*i;
+                    if(i>0)
+                        while(lb1.getX()<k)
+                        {
+                            lb1.setLocation(lb1.getX()+1, lb1.getY());
+                            Thread.sleep(30);
+                        }
+                    else
+                        while(lb1.getX()>k)
+                        {
+                            lb1.setLocation(lb1.getX()-1, lb1.getY());
+                            Thread.sleep(30);
+                        }
+                    while(lb1.getX()<k)
+                    {
+                       lb1.setLocation(lb1.getX()+1, lb1.getY());
+                       Thread.sleep(30);
+                    }
+
+                } catch (Exception e) {
+                }
+            }
+        });
+        threads[cur].start();
+    }
+    public void Move_back(int i)
+    {
+        
+       
+        curT ++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (cur != 0)
+                        threads[cur - 1].join();
+                    int m,n;
+                    for(int z=0;z<frame;z++)
+                    {
+                    m=lbArray_Frame[i+z*num].getX();
+                    n=lbArray_Frame[i+z*num].getY()+34;
+                    int c=lbArray_Frame[i+num*(z+1)].getX();
+                    int d=lbArray_Frame[i+num*(z+1)].getY();
+                    while(lbArray_Frame[i+num*(z+1)].getX()>m)
+                    {
+
+                        int k=(int)(lbArray_Frame[i+num*(z+1)].getX()-1-m)*(d-n)/(c-m)+n;
+                        lbArray_Frame[i+num*(z+1)].setLocation(lbArray_Frame[i+num*(z+1)].getX()-1, k);
+                        PanelMoPhong.repaint();
+                        Thread.sleep(5);
+                    }
+                    }
+
+                } catch (Exception e) {
+                }
+            }
+        });
+        threads[cur].start();
+    }
+    public void Setbg(int k)
+    {
+        curT++;
+        int cur = curT;
+        threads[cur] = new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    if (cur != 0) 
+                    {
+                        threads[cur-1].join();
+                    }
+                    for(int i=0;i<num;i++)
+                    {
+                        for(int j= 0; j<=frame; j++)
+                            lbArray_Frame[i+num*j].setOpaque(false);
+                    }
+                    for(int z=0;z<=frame;z++)
+                    {
+                        lbArray_Frame[k+num*z].setBackground(Color.WHITE);
+                        lbArray_Frame[k+num*z].setOpaque(true);
+                    }
+                    Thread.sleep(0);
+                } catch (Exception e) {}
+            }
+        });
+        threads[cur].start();
+    }
+    public void LRU()
+    {
+        HighLight(1);
+        // gán giá trị frame khởi đầu = -1 tương đương rỗng
+        SetlbTrangThai("khởi tạo fram ban đầu", 0);    
+        for (int i = 0; i < frame; i++)
+        {
+            HighLight(2);
+            frames[i] = -1;
+            SetValue( lbArray_Frame[(i+1)*num], -1 );
+            HighLight(3);
+        }
+        HighLight(4);	
+	int ViTriThayThe = -1;
+        // khởi tạo vị trí thay thế ban đầu = 0;
+        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
+        SetlbVTTT(ViTriThayThe);
+	int i, j, available, count = 0;
+	for (i = 0; i < num; i++)
+	{
+            
+            HighLight(5);
+            // gán frame mới bằng frame cũ lbArray_Frame[ 
+            if(i<(num))
+            {
+                for(int k=0;k<frame;k++)
+                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
+            }
+            // gán biến I 
+            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
+            SetlbI(i);
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            HighLight(7);
+            Setbg(i);
+            SwapFrame(i,-1);
+            // kiểm tra a[i] đã tồn tại trong frame chưa
+            int TonTai = 0;
+            SetlbTonTai(-2);
+            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
+            int temp = -1;
+            for (int k = 0; k < frame; k++)
+            {
+                HighLight(9);
+                if (frames[k] == array[i])
+                {    
+                    TonTai = 1;
+                    SwapFrameTimKiem(i,k); 
+                    HighLight(10);
+                    SetlbTonTai(k);
+                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
+                    temp=k;
+                    break;
+                }
+                
+            }
+            if(temp!=-1)
+            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
+            if(TonTai==0)
+            {
+                SwapFrameTimKiem(i,-1);
+                SetlbTonTai(-1);
+            }
+            
+            HighLight(12);
+            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
+            if (TonTai == 0) 
+            {
+                
+                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
+                HighLight(14);    
+                // tính lại vị trí thay thế
+                ViTriThayThe = TimViTriLRU(i, num, frame, array, frames);
+                SetlbVTTT(ViTriThayThe);
+                // swap frame[ThayThe] = a[i] 
+                HighLight(15); 
+                frames[ViTriThayThe] = array[i];
+                SetlbTrangThai("Thay thế trang ô nhớ", 0);
+                SwapFrameThayThe(i,ViTriThayThe);
+                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
+                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
+                   
+                // đánh dấu lỗi trang tại frame-error[i];
+                SetlbTrangThai("Đánh dấu lỗi trang", 0);
+                HighLight(16);
+                SetFalse(lbArray_Error[i]);
+            }
+            // chuyển frame so sánh về vị trí cũ
+            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
+            HighLight(18);
+            SwapFrame(i,1);
+            
+            PanelMoPhong.repaint();
+            HighLight(19);
+            
+	}
+        HighLight(20);
+        SetlbTrangThai("Hoàn thành mô phỏng", 0);
+    }
+    public int TimViTriLRU(int i, int n, int Frame, int[] a, int[] Frames)
+    {
+        HighLight(23);
+	for (int f = 0; f < Frame; f++)
+	{
+            SetlbTrangThai("Kiểm tra có tồn tại frame trống", 0);
+            HighLight(24);
+            if (Frames[f] == -1)
+            {
+                SwapFrameTimKiem(i,f);
+                SetlbTonTai(f);
+                SetlbTrangThai("Tìm thấy Frame trống", 0);
+                HighLight(25);
+                return f;
+            }
+	}
+        HighLight(26);
+	int value = -1;
+        HighLight(27);
+	int[] m= new int[50];
+        HighLight(28);
+	for (int z = 0; z < 50; z++)
+	{
+            HighLight(29);
+            m[z] = -1;
+	}
+        HighLight(30);
+	for (int t = 0; t < Frame; t++)
+	{
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            SwapFrame_dt(lbArray_Frame[i+num*(t+1)],i-2);
+            int kt = 0;
+            HighLight(31);
+            SetlbTrangThai("Kiểm tra tồn tại của frame ở quá khứ", 0);
+            for (int z = i -1; z >= 0; z--)
+            {
+                HighLight(32);
+		if (Frames[t] == a[z])
+		{
+                    HighLight(33);
+                    kt = 1;
+                    m[z] = frames[t];
+                    HighLight(43);
+                    break;
+		}
+                if(z>0)
+                {
+
+                    Move(lbArray_Frame[i+num*(t+1)], -1);
+                }
+                
+            }
+            SetlbTrangThai("Di chuyển frame về trị trí so sánh", 0);
+            if (kt == 0)
+            {
+                Move_back(i);
+                HighLight(47);
+                return t;
+            }
+	}
+	for (int z = 0; z<n; z++)
+	{
+            HighLight(35);
+            if (m[z] != -1)
+            {
+                HighLight(36);
+                value = m[z];
+		break;
+            }
+	}
+        HighLight(37);
+	for (int z = 0; z < Frame; z++)
+	{
+            HighLight(38);
+            if (value == Frames[z])
+            {
+                LightLabel(lbArray_Frame[i+num*(z+1)],0);
+                HighLight(39);
+                Move_back(i);
+                return z;
+            }
+	}
+        HighLight(40);
+        return -1;
+    }
+} 
+
                 
