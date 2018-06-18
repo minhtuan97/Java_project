@@ -29,16 +29,16 @@ public class InfoFrame extends JFrame
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-				InfoFrame frame = new InfoFrame();
-			        frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                    InfoFrame frame = new InfoFrame();
+                    frame.setVisible(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 	}
 
     public InfoFrame()
@@ -56,10 +56,11 @@ public class InfoFrame extends JFrame
 	//setAlwaysOnTop(rootPaneCheckingEnabled);
 	JLabel lb1 = new JLabel("Phần mềm mô phỏng");
         JLabel lb2 = new JLabel("THUẬT TOÁN CHIA TRANG Ô NHỚ");
-        JLabel lb3 = new JLabel("Đồ án môn : Ngôn ngữ lập trình java");
+        JLabel lb3 = new JLabel("Đồ án môn : Ngôn ngữ lập trình java SE330.I21");
+        JLabel lb9 = new JLabel("Giảng viên hướng dẫn: Ths. Huỳnh Tuấn Anh");
         JLabel lb4 = new JLabel("Thành viên nhóm");
         JLabel lb5 = new JLabel("Lê Minh Tuấn - 15520986");
-        JLabel lb6 = new JLabel("Võ Đình Thắng - 15520665");
+        JLabel lb6 = new JLabel("Võ Đình Thắng - 15520796");
         JLabel lb7 = new JLabel("Võ Sĩ Vai - 15520999");
         JLabel lb8 = new JLabel("Copyright 2018");
         
@@ -78,12 +79,17 @@ public class InfoFrame extends JFrame
         lb3.setFont(new Font("Arial", Font.PLAIN, 12));
         lb3.setHorizontalAlignment(SwingConstants.CENTER);
         
-        lb4.setBounds(0, 120, 390, 30);
+        lb9.setBounds(0, 115, 390, 30);
+        lb9.setForeground(Color.red);
+        lb9.setFont(new Font("Arial", Font.PLAIN, 12));
+        lb9.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        lb4.setBounds(0, 140, 390, 30);
         lb4.setForeground(Color.PINK);
         lb4.setFont(new Font("Arial", Font.PLAIN, 10));
         lb4.setHorizontalAlignment(SwingConstants.CENTER);
         
-        lb5.setBounds(0, 150, 390, 30);
+        lb5.setBounds(0, 160, 390, 30);
         lb5.setForeground(Color.PINK);
         lb5.setFont(new Font("Arial", Font.PLAIN, 10));
         lb5.setHorizontalAlignment(SwingConstants.CENTER);
@@ -93,7 +99,7 @@ public class InfoFrame extends JFrame
         lb6.setFont(new Font("Arial", Font.PLAIN, 10));
         lb6.setHorizontalAlignment(SwingConstants.CENTER);
         
-        lb7.setBounds(0, 210, 390, 30);
+        lb7.setBounds(0, 200, 390, 30);
         lb7.setForeground(Color.PINK);
         lb7.setFont(new Font("Arial", Font.PLAIN, 10));
         lb7.setHorizontalAlignment(SwingConstants.CENTER);
@@ -102,8 +108,7 @@ public class InfoFrame extends JFrame
         lb8.setForeground(Color.BLACK);
         lb8.setFont(new Font("Arial", Font.PLAIN, 11));
         lb8.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        
+  
         pnInfo.add(lb1);
         pnInfo.add(lb2);
         pnInfo.add(lb3);
@@ -112,6 +117,7 @@ public class InfoFrame extends JFrame
         pnInfo.add(lb6);
         pnInfo.add(lb7);
         pnInfo.add(lb8);
+        pnInfo.add(lb9);
         
     }
     

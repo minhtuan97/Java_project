@@ -22,15 +22,14 @@ import javax.swing.event.*;
 
 // Lớp MainFrame kế thừa từ JFrame 
 public class MainFrame extends JFrame
-{  
-   
+{ 
     // Serial Version
     private static final long serialVersionUID = 1L;
     // # Khai báo các các phần tử trong frame
     // Gom nhom cac radio button
     private final ButtonGroup grSort;
     // Các nút trên thanh toolbar
-    private final JButton btPlay, btPause, btRefresh, btInputData, btInputFile, btDel, btShow;
+    private final JButton btPlay, btPause, btRefresh, btInputData, btInputFile, btShow;
     // doi tuong luu buoc chay cac dong code
     private DefaultListModel<String> model;
     // list string hien thi code
@@ -55,7 +54,7 @@ public class MainFrame extends JFrame
     // label hien thi cac bien tam i
     private JLabel status = new JLabel("");
     // label hien thi cac bien tam i,j,a,k,count;
-    private JLabel lbI, lbI1, lbai, lbframe, lbloitrang, lbJ, lbViTriThayThe, lbViTriThayThe1, lbTonTai;
+    private JLabel lbI, lbI1, lbJ, lbViTriThayThe, lbViTriThayThe1, lbTonTai;
     // # Khai báo các biến trong chương trình
     // bien luu so phan tu mang
     public int num = 0, frame = 0;
@@ -68,7 +67,8 @@ public class MainFrame extends JFrame
     // thoi gian nghi, thuc thi mili giay
     private int time = 35;
     //ket qua loi trang
-    int count;     
+    int count; 
+    private int played = 0, paused = 0 , data = 0;
      
     public MainFrame()
     {
@@ -88,22 +88,8 @@ public class MainFrame extends JFrame
         ////////////////////////////////////////////////////////////////////////
         // tạo thanh menu
         MenuBar = new JMenuBar();
-        JMenu menuHelp = new JMenu("Help");  
-        JMenu menuAbout = new JMenu("Abouts");
-        JMenuItem info = new JMenuItem("Information");
-        JMenuItem fellback = new JMenuItem("Feel Back");
-        menuAbout.add(info);
-        menuAbout.add(fellback);   
-        info.addActionListener( new ActionListener() 
-        { 
-            public void actionPerformed(ActionEvent actionEvent) 
-            { 
-                InfoFrame infoframe = new InfoFrame();
-                infoframe.setVisible(true);
-            }
-        }); 
-        MenuBar.add(menuHelp);
-        MenuBar.add(menuAbout);       
+        JMenu menuHelp = new JMenu("");   
+        MenuBar.add(menuHelp);       
         setJMenuBar(MenuBar);
         ///////////////////////////////////////////////////////////////////////
         // Tạo thanh công cụ
@@ -115,50 +101,73 @@ public class MainFrame extends JFrame
         ImageIcon Icon1 = new ImageIcon(new ImageIcon("icon/play-sign.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btPlay = new JButton(Icon1);
         btPlay.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btPlay.setText("Play");
+        btPlay.setText("Chạy");
         btPlay.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
-            {                    
-                if(rdFIFO.isSelected())
+            {    
+                if(data == 1 && played == 0)
                 {
-                    FIFO();
+                    btPause.setEnabled(true);
+                    btPlay.setEnabled(false);
+                    if(rdFIFO.isSelected())
+                    {
+                        FIFO();
+                    }
+                    if(rdOPT.isSelected())
+                    {
+                        OPT();
+                    }
+                    if(rdLRU.isSelected())
+                    {
+                        LRU();
+                    }
+                    played = 0;
                 }
-                if(rdOPT.isSelected())
+                else
                 {
-                    OPT();
-                }
-                if(rdLRU.isSelected())
-                {
-                    LRU();
+                    
+                    if(played == 1 && data == 1)
+                    {
+                        btPause.setEnabled(true);
+                        btPlay.setEnabled(false);
+                        ResumeAllThreads();
+                    }
+                    
                 }
             }
         });        
         ImageIcon Icon2 = new ImageIcon(new ImageIcon("icon/pause-symbol.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btPause = new JButton(Icon2);
         btPause.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btPause.setText("Pause");
+        btPause.setText("Dừng");
+        btPause.setEnabled(false);
         btPause.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
             {
+                played = 1;
+                btPause.setEnabled(false);
                 SuspendAllThreads();
+                btPlay.setEnabled(true);
             }
 	});    
         ImageIcon Icon3 = new ImageIcon(new ImageIcon("icon/refresh.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btRefresh = new JButton(Icon3);
         btRefresh.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btRefresh.setText("Refresh");
+        btRefresh.setText("Đặt lại");
         btRefresh.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
             {
-                XoaKhungMoPhong();
-                if(num !=0)
+                if(data == 1)
                 {
-                   HienKhungMoPhong(); 
-                }
-                
+                    XoaKhungMoPhong();
+                    if(num !=0)
+                    {
+                       HienKhungMoPhong(); 
+                    }   
+                }     
             }
 	}); 
         ImageIcon Icon4 = new ImageIcon(new ImageIcon("icon/folder.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
@@ -184,42 +193,61 @@ public class MainFrame extends JFrame
                 InputFileFrame f3 = new InputFileFrame();
                 f3.setVisible(true);
             } 
-        }); 
-        ImageIcon Icon6 = new ImageIcon(new ImageIcon("icon/hide.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
-        btDel = new JButton(Icon6);
-        btDel.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btDel.setText("Delete");
-        btDel.addActionListener(new ActionListener() 
-        {
-            public void actionPerformed(ActionEvent e) 
-            {
-                XoaKhungMoPhong();
-                num = 0;
-            }
-	}); 
+        });  
         ImageIcon Icon7 = new ImageIcon(new ImageIcon("icon/eye.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         btShow = new JButton(Icon7);
         btShow.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btShow.setText("Show");
+        btShow.setText("Xem kết quả");
         btShow.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
             {
-                if(num !=0)
+                if(data == 1)
                 {
-                   HienKhungMoPhong(); 
+                   XoaKhungMoPhong();
+                   HienKhungMoPhong();
+                   SliderTocDoMoPhong.setEnabled(false);
+                   time = 0;
+                   if(rdFIFO.isSelected())
+                    {
+                        FIFO();
+                    }
+                    if(rdOPT.isSelected())
+                    {
+                        OPT();
+                    }
+                    if(rdLRU.isSelected())
+                    {
+                        LRU();
+                    }
+                    SliderTocDoMoPhong.setEnabled(true);
                 }
             }
 	}); 
+        
+        ImageIcon Icon8 = new ImageIcon(new ImageIcon("icon/info.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
+        JLabel lb101 = new JLabel("                 ");
+        JButton btInfo = new JButton(Icon8);
+        btInfo.setBorder(new EmptyBorder(7, 7, 7, 7));
+        btInfo.setText("Thông tin phần mềm");
+        btInfo.addActionListener( new ActionListener()
+        { 
+            public void actionPerformed(ActionEvent actionEvent) 
+            { 
+                InfoFrame infoframe = new InfoFrame();
+                infoframe.setVisible(true);
+            } 
+        }); 
         ToolBar.add(btRefresh);
         ToolBar.add(btPlay);
         ToolBar.add(btPause);    
         ToolBar.addSeparator();
-        ToolBar.add(btDel);
         ToolBar.add(btShow);
         ToolBar.addSeparator();
         ToolBar.add(btInputData);
-        ToolBar.add(btInputFile);      
+        ToolBar.add(btInputFile); 
+        ToolBar.add(lb101);
+        ToolBar.add(btInfo);
         ToolBar.setSize(800, 400);
         add(ToolBar,BorderLayout.NORTH); 
         ////////////////////////////////////////////////////////////////////////
@@ -262,7 +290,12 @@ public class MainFrame extends JFrame
         {
             @Override
             public void actionPerformed(ActionEvent event) 
-            {              
+            {
+                if(data ==1)
+                {
+                    XoaKhungMoPhong();
+                    HienKhungMoPhong();
+                }
                 model.removeAllElements();
                 addFIFOcode();
                 lsCode.setSelectedIndex(0);
@@ -273,7 +306,12 @@ public class MainFrame extends JFrame
         {
             @Override
             public void actionPerformed(ActionEvent event) 
-            {      
+            {   
+                if(data ==1)
+                {
+                    XoaKhungMoPhong();
+                    HienKhungMoPhong();
+                }
                 model.removeAllElements();
                 addOPTcode();
                 lsCode.setSelectedIndex(0);
@@ -285,6 +323,11 @@ public class MainFrame extends JFrame
             @Override
             public void actionPerformed(ActionEvent event) 
             {    
+                if(data ==1)
+                {
+                    XoaKhungMoPhong();
+                    HienKhungMoPhong();
+                }
                 model.removeAllElements();
                 addLRUcode(); 
                 lsCode.setSelectedIndex(0);
@@ -343,17 +386,17 @@ public class MainFrame extends JFrame
         // tạo pannel hiển thị code
         PanelCode = new JPanel();
         PanelCode.setLayout(null);
-        PanelCode.setBorder(new TitledBorder(null, "Code C/C++", TitledBorder.LEADING, TitledBorder.LEFT, null, null));
+        PanelCode.setBorder(new TitledBorder(null, "Code Thuật giải", TitledBorder.LEADING, TitledBorder.LEFT, null, null));
         PanelCode.setBackground(Color.white);   
         PanelCode.setForeground(Color.GREEN);
         PanelCode.setPreferredSize(new Dimension(380, 650));
         JLabel lb1 = new JLabel("Độ thu phóng: "); 
         lb1.setBounds(10, 20, 150, 23);
-        JLabel lb2 = new JLabel("10 pixel"); 
+        JLabel lb2 = new JLabel("12 pixel"); 
         lb2.setBounds(290, 20, 150, 23);
         PanelCode.add(lb1);
         PanelCode.add(lb2);
-        SliderThuPhongCode = new JSlider(JSlider.HORIZONTAL, 8, 20, 10);
+        SliderThuPhongCode = new JSlider(JSlider.HORIZONTAL, 8, 20, 12);
         SliderThuPhongCode.setBounds(120, 20, 150, 23);
         SliderThuPhongCode.setBackground(Color.WHITE);
         PanelCode.add(SliderThuPhongCode);
@@ -438,7 +481,8 @@ public class MainFrame extends JFrame
                 }
             }
         });          
-    }        
+    }  
+    
     // Hàm sử lý trạng thái các nút
     public void DatTrangThai(int s)
     {
@@ -447,7 +491,8 @@ public class MainFrame extends JFrame
             case 0:// trạng thái lúc khởi chạy chương trình
                 btPlay.setEnabled(false);
                 btPause.setEnabled(false);
-                btRefresh.setEnabled(true);
+                btRefresh.setEnabled(false);
+                btShow.setEnabled(false);
                 btInputData.setEnabled(true);
                 btInputFile.setEnabled(true);
                 rdFIFO.setEnabled(true);
@@ -496,7 +541,7 @@ public class MainFrame extends JFrame
                 //
                 ;
         }
-    }    
+    }
     // tao Du lieu chay ben o code
     public void addFIFOcode()
     {
@@ -634,116 +679,6 @@ public class MainFrame extends JFrame
         model.addElement("  return 0;                                   ");//40
         model.addElement("}                                             ");//41
     }    
-    // hiển thị số lỗi trang và thông báo sap xep xong 
-    public void Result()
-    {
-        curT ++;
-        int cur = curT;
-        threads[cur] = new Thread(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                try 
-                {
-                    if (cur != 0) 
-                    {
-                        threads[cur-1].join();
-                    }
-                    //
-                    
-                    Thread.sleep(time);
-                } catch (Exception e) {}
-            }
-        });
-        threads[cur].start();
-        JOptionPane.showMessageDialog(this, "Thực hiện xong!");
-    }
-    // di chuyển label 1 sang 2 theo chiều dọc: di chuyển lb1 đến vị trí lb2
-    public void MoveHorizontal(JLabel[] lb1, int i, JLabel lb2) 
-    {
-        curT ++;
-        int cur = curT;
-        threads[cur] = new Thread(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                try 
-                {
-                    if (cur != 0) 
-                    {
-                        threads[cur-1].join();
-                    }
-                    
-                    if(lb1[i].getX()<lb2.getX())
-                        while (lb1[i].getX() < lb2.getX()) 
-                        {
-                            
-                            
-                            //lb2.setOpaque(false);
-                            for(int z = 0; z < frame+1; z++)
-                            {        
-                                lb1[z*num+i].setLocation(lb1[z*num+i].getX()+1, lb1[z*num+i].getY());
-                            }  
-                            PanelChiaTrang.repaint();
-                            Thread.sleep(100);
-                        }
-                    if(lb1[i].getX()>lb2.getX())
-                        while (lb1[i].getY() > lb2.getY()) 
-                        {
-                            //lb2.setOpaque(false);
-                             for(int z = 0; z < frame+1; z++)
-                            {      
-                                lb1[z*num+i].setLocation(lb1[z*num+i].getX()-1, lb1[z*num+i].getY());
-                            }    
-                            PanelChiaTrang.repaint();
-                            Thread.sleep(100);
-                        }
-                    Thread.sleep(2*time);
-                    lb1[i].setLocation(lb2.getX(), lb2.getY());
-                } catch (Exception e) {}
-            }
-        });
-        threads[cur].start();
-    }    
-    // di chuyển label 1 sang 2 theo chiều ngang
-    public void MoveVertical(JLabel lb1, JLabel lb2) 
-    {
-        curT ++;
-        int cur = curT;
-        threads[cur] = new Thread(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                try 
-                {
-                    if (cur != 0) 
-                    {
-                        threads[cur-1].join();
-                    }
-                    if(lb1.getX()<lb2.getX())
-                        while (lb1.getX() < lb2.getX()) 
-                        {
-                            //lb2.setOpaque(false);
-                            lb1.setLocation(lb1.getX()+1, lb1.getY());
-                            Thread.sleep(time);
-                        }
-                    if(lb1.getX()>lb2.getX())
-                        while (lb1.getX() > lb2.getX()) 
-                        {
-                            //lb2.setOpaque(false);
-                            lb1.setLocation(lb1.getX()-1, lb1.getY());
-                            Thread.sleep(time);
-                        }
-                    Thread.sleep(2*time);
-                    lb1.setLocation(lb2.getX(), lb2.getY());
-                } catch (Exception e) {}
-            }
-        });
-        threads[cur].start();
-    } 
     // tô màu ô bị thay thế
     public void LightLabel(JLabel lb, int i)
     {
@@ -764,10 +699,13 @@ public class MainFrame extends JFrame
                     {
                         case -1: lb.setBackground(Color.WHITE);break;
                         case 0: lb.setBackground(Color.YELLOW);break;
-                        case 1: lb.setBackground(Color.GREEN); 
-                        Thread.sleep(1000);break;
+                        case 1: lb.setBackground(Color.GREEN);Thread.sleep(1000);break;
+                        case 2: lb.setBackground(Color.ORANGE);break;
+                        case 3: lb.setBackground(Color.pink);break;
+                        case 4: lb.setBackground(Color.CYAN);break;
+                        case 5: lb.setBackground(Color.MAGENTA);break;
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(time);
                 } catch (Exception e) {}
             }
         });
@@ -791,7 +729,7 @@ public class MainFrame extends JFrame
                     }
                     lb.setText("F");
                     lbViTriThayThe1.setVisible(false);
-                    Thread.sleep(500);
+                    Thread.sleep(time);
                 } catch (Exception e) {}
             }
         });
@@ -814,7 +752,7 @@ public class MainFrame extends JFrame
                         threads[cur-1].join();
                     }
                     lb.setText(""+value);
-                    Thread.sleep(300);
+                    Thread.sleep(time);
                 } catch (Exception e) {}
             }
         });
@@ -840,13 +778,12 @@ public class MainFrame extends JFrame
                     lbI.setBounds(lbArray[i].getX(), lbArray[i].getY()-30, 32, 25);
                     lbI1.setText("i="+i);
                     lbI1.setBounds(lbArray_FrameSS[i].getX(), lbArray_FrameSS[0].getY()-30,32,25);
-                    Thread.sleep(500);
+                    Thread.sleep(time);
                 } catch (Exception e){}
             }
         });
         threads[cur].start();
     }
-    
     // đặt giá trị vị trí label theo i, s
     public void SetlbTonTai(int i) 
     {
@@ -873,13 +810,12 @@ public class MainFrame extends JFrame
                    
                         
                     //lbTonTai.setBounds(40, lbArray_FrameSS[frame].getY()+32, 100, 25);
-                    Thread.sleep(1000);
+                    Thread.sleep(time);
                 } catch (Exception e){}
             }
         });
         threads[cur].start();
-    }
-    
+    } 
     // đặt giá trị vị trí label theo i, s
     public void SetlbTrangThai(String s, int i) 
     {
@@ -906,14 +842,12 @@ public class MainFrame extends JFrame
                     }
                     
                     //lbTonTai.setBounds(40, lbArray_FrameSS[frame].getY()+32, 100, 25);
-                    Thread.sleep(500);
+                    Thread.sleep(time);
                 } catch (Exception e){}
             }
         });
         threads[cur].start();
-    }
-    
-    
+    } 
     // đặt giá trị vị trí label theo i, s
     public void SetlbVTTT(int i) 
     {
@@ -936,13 +870,13 @@ public class MainFrame extends JFrame
                         lbViTriThayThe1.setBounds(55, lbArray_FrameSS[i+1].getY(), 32, 32);
                     }
                     
-                    Thread.sleep(500);
+                    Thread.sleep(time);
                 } catch (Exception e){}
             }
         });
         threads[cur].start();
     }
-    // dđặt vị trí của biến J di chuyển theo chiều dọc
+    // đặt vị trí của biến J di chuyển theo chiều dọc
     public void SetlbJ(JLabel lb, int i) 
     {
         curT ++;
@@ -963,7 +897,7 @@ public class MainFrame extends JFrame
                     lb.setVerticalAlignment(SwingConstants.CENTER);
                     lb.setBackground(Color.YELLOW);
                     lb.setBounds(lbArray[i].getX()-50, lbArray[i].getY()+ 34*i, 32, 25);
-                    Thread.sleep(200);
+                    Thread.sleep(time);
                 } catch (Exception e){}
             }
         });
@@ -1008,7 +942,7 @@ public class MainFrame extends JFrame
     {   
         // tính tọa độ x bắt đầu vẽ để khung hiển thị chính giữa
         int intx = 200+ 350-34*(num/2);
-        
+        played = 0;
         this.frames             = new int[frame];
         this.lbArray            = new JLabel[num];
         this.lbArray_Frame      = new JLabel[num*(this.frame+1)];
@@ -1031,13 +965,14 @@ public class MainFrame extends JFrame
         PanelMoPhong.add(lbI1);
         
         status = new JLabel();
-        status.setHorizontalAlignment(SwingConstants.LEFT);
+        status.setHorizontalAlignment(SwingConstants.CENTER);
         status.setVerticalAlignment(SwingConstants.CENTER);
+        status.setFont(new Font("Monospaced",Font.BOLD,15));
         status.setBackground(Color.WHITE);
         //status.setFont(new Font(20)); new font
         status.setBorder(BorderFactory.createLineBorder(Color.GREEN)); 
         status.setOpaque(true);
-        status.setBounds(10, 10, 800, 30);
+        status.setBounds(10, 10, 870, 30);
         PanelMoPhong.add(status);
         
         // label biến tạm j của vòng for
@@ -1179,7 +1114,7 @@ public class MainFrame extends JFrame
                     lsCode.setSelectedIndex(line); 
                     lsCode.ensureIndexIsVisible(line); 
                     
-                    Thread.sleep(100);
+                    Thread.sleep(time);
                 } catch (Exception e) {}
             }
         });
@@ -1195,8 +1130,8 @@ public class MainFrame extends JFrame
         this.array              = new int[num];
         System.arraycopy( array, 0, this.array, 0, array.length );
         HienKhungMoPhong();
+        data = 1;
     }
-    
     // di chuyển frame đang so sanh ra vị trí so sánh nếu x= -1 ; ngược lại x=1;
     public void SwapFrame(int i, int x) 
     {
@@ -1213,7 +1148,7 @@ public class MainFrame extends JFrame
                     {
                         threads[cur-1].join();
                     }
-                    Thread.sleep(500);
+                    Thread.sleep(time);
                     if(x==-1)
                     while(lbArray_Frame[i].getX() > lbArray_FrameSS[0].getX())
                     {
@@ -1221,7 +1156,7 @@ public class MainFrame extends JFrame
                         {
                             lbArray_Frame[z*num+i].setLocation(lbArray_Frame[z*num+i].getX()- 1, lbArray_FrameSS[z].getY());
                         }
-                        Thread.sleep(30);
+                        Thread.sleep(time/(i+1));
                     }
                     if(x==1)
                     while(lbArray_Frame[i].getX() < 200+ 350-34*(num/2)+34*(i%num))
@@ -1230,15 +1165,14 @@ public class MainFrame extends JFrame
                         {
                             lbArray_Frame[z*num+i].setLocation(lbArray_Frame[z*num+i].getX() + 1, lbArray_FrameSS[z].getY());                           
                         }
-                        Thread.sleep(30);
+                        Thread.sleep(time/(i+1));
                     }
                    
                 } catch (Exception e) {}
             }
         });
         threads[cur].start();
-    }    
-    
+    }      
     // di chuyển frame tìm kiếm ; với x là vị trí tồn tại -1, 0, 1, 2,....
     public void SwapFrameTimKiem(int i, int x) 
     {
@@ -1255,13 +1189,13 @@ public class MainFrame extends JFrame
                     {
                         threads[cur-1].join();
                     }
-                    Thread.sleep(500);
+                    Thread.sleep(time);
                     if(x==-1)
                     {
                         while(lbArray_Frame[i].getY() < lbArray_FrameSS[frame].getY())
                         {
                             lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
-                            Thread.sleep(30);
+                            Thread.sleep(time/(i+1));
                         }
                     }
                     else
@@ -1269,7 +1203,7 @@ public class MainFrame extends JFrame
                         while(lbArray_Frame[i].getY() < lbArray_FrameSS[x+1].getY())
                         {
                             lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
-                            Thread.sleep(30);
+                            Thread.sleep(time/(i+1));
                         }
                     }
                     Thread.sleep(100);
@@ -1280,8 +1214,7 @@ public class MainFrame extends JFrame
             }
         });
         threads[cur].start();
-    }   
-    
+    }    
      // di chuyển frame thay thế trang
     public void SwapFrameThayThe(int i, int vttt) 
     {
@@ -1298,13 +1231,13 @@ public class MainFrame extends JFrame
                     {
                         threads[cur-1].join();
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(time);
                     while(lbArray_Frame[i].getY() < lbArray_FrameSS[vttt+1].getY())
                     {
                         lbArray_Frame[i].setLocation(lbArray_Frame[i].getX(), lbArray_Frame[i].getY()+ 1);
-                        Thread.sleep(30);
+                        Thread.sleep(time/(i+1));
                     }
-                    Thread.sleep(200);
+                    Thread.sleep(time);
                     // đưa lbArray_Frame[i] về vị trí cũ
                     lbArray_Frame[i].setLocation(lbArray_FrameSS[0].getX(), lbArray_FrameSS[0].getY());  
                    
@@ -1312,291 +1245,7 @@ public class MainFrame extends JFrame
             }
         });
         threads[cur].start();
-    }   
-    
-    public void FIFO()
-    {   
-        HighLight(1);
-        // gán giá trị frame khởi đầu = -1 tương đương rỗng
-        SetlbTrangThai("khởi tạo fram ban đầu", 0);     
-        for (int i = 0; i < frame; i++)
-        {
-            HighLight(2);
-            frames[i] = -1;
-            SetValue( lbArray_Frame[(i+1)*num], -1 );
-            HighLight(3);
-        }	
-        HighLight(4);	
-	int ViTriThayThe = -1;
-        // khởi tạo vị trí thay thế ban đầu = 0;
-        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
-        SetlbVTTT(ViTriThayThe);
-	for (int i = 0; i < num; i++)
-	{
-            HighLight(5);
-            // gán frame mới bằng frame cũ lbArray_Frame[ 
-            if(i<(num))
-            {
-                for(int k=0;k<frame;k++)
-                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
-            }
-            // gán biến I 
-            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
-            SetlbI(i);
-            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
-            HighLight(7);
-            SwapFrame(i,-1);
-            // kiểm tra a[i] đã tồn tại trong frame chưa
-            int TonTai = 0;
-            SetlbTonTai(-2);
-            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
-            int temp = -1;
-            for (int k = 0; k < frame; k++)
-            {
-                HighLight(9);
-                if (frames[k] == array[i])
-                {    
-                    TonTai = 1;
-                    SwapFrameTimKiem(i,k); 
-                    HighLight(10);
-                    SetlbTonTai(k);
-                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
-                    temp=k;
-                    break;
-                }
-                
-            }
-            if(temp!=-1)
-            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
-            if(TonTai==0)
-            {
-                SwapFrameTimKiem(i,-1);
-                SetlbTonTai(-1);
-            }
-
-            
-            HighLight(12);
-            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
-            if (TonTai == 0) 
-            {
-                
-                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
-                HighLight(14);    
-                // tính lại vị trí thay thế
-                ViTriThayThe = (ViTriThayThe + 1) % frame;
-                SetlbVTTT(ViTriThayThe);
-                // swap frame[ThayThe] = a[i] 
-                HighLight(15); 
-                frames[ViTriThayThe] = array[i];
-                SetlbTrangThai("Thay thế trang ô nhớ", 0);
-                SwapFrameThayThe(i,ViTriThayThe);
-                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
-                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
-                   
-                // đánh dấu lỗi trang tại frame-error[i];
-                SetlbTrangThai("Đánh dấu lỗi trang", 0);
-                HighLight(16);
-                SetFalse(lbArray_Error[i]);
-            }
-            // chuyển frame so sánh về vị trí cũ
-            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
-            HighLight(18);
-            SwapFrame(i,1);
-            
-            PanelMoPhong.repaint();
-            HighLight(19);
-        }
-        HighLight(20);
-        SetlbTrangThai("Hoàn thành mô phỏng", 0);
-    }
-    public void OPT()
-    {
-        HighLight(1);
-        // gán giá trị frame khởi đầu = -1 tương đương rỗng
-        SetlbTrangThai("khởi tạo fram ban đầu", 0);    
-        for (int i = 0; i < frame; i++)
-        {
-            HighLight(2);
-            frames[i] = -1;
-            SetValue( lbArray_Frame[(i+1)*num], -1 );
-            HighLight(3);
-        }
-        HighLight(4);	
-	int ViTriThayThe = -1;
-        // khởi tạo vị trí thay thế ban đầu = 0;
-        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
-        SetlbVTTT(ViTriThayThe);
-	int i, j, available, count = 0;
-	for (i = 0; i < num; i++)
-	{
-            
-            HighLight(5);
-            // gán frame mới bằng frame cũ lbArray_Frame[ 
-            if(i<(num))
-            {
-                for(int k=0;k<frame;k++)
-                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
-            }
-            // gán biến I 
-            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
-            SetlbI(i);
-            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
-            HighLight(7);
-            Setbg(i);
-            SwapFrame(i,-1);
-            // kiểm tra a[i] đã tồn tại trong frame chưa
-            int TonTai = 0;
-            SetlbTonTai(-2);
-            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
-            int temp = -1;
-            for (int k = 0; k < frame; k++)
-            {
-                HighLight(9);
-                if (frames[k] == array[i])
-                {    
-                    TonTai = 1;
-                    SwapFrameTimKiem(i,k); 
-                    HighLight(10);
-                    SetlbTonTai(k);
-                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
-                    temp=k;
-                    break;
-                }
-                
-            }
-            if(temp!=-1)
-            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
-            if(TonTai==0)
-            {
-                SwapFrameTimKiem(i,-1);
-                SetlbTonTai(-1);
-            }
-            
-            HighLight(12);
-            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
-            if (TonTai == 0) 
-            {
-                
-                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
-                HighLight(14);    
-                // tính lại vị trí thay thế
-                ViTriThayThe = TimViTriOTP(i, num, frame, array, frames);
-                SetlbVTTT(ViTriThayThe);
-                // swap frame[ThayThe] = a[i] 
-                HighLight(15); 
-                frames[ViTriThayThe] = array[i];
-                SetlbTrangThai("Thay thế trang ô nhớ", 0);
-                SwapFrameThayThe(i,ViTriThayThe);
-                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
-                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
-                   
-                // đánh dấu lỗi trang tại frame-error[i];
-                SetlbTrangThai("Đánh dấu lỗi trang", 0);
-                HighLight(16);
-                SetFalse(lbArray_Error[i]);
-            }
-            // chuyển frame so sánh về vị trí cũ
-            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
-            HighLight(18);
-            SwapFrame(i,1);
-            
-            PanelMoPhong.repaint();
-            HighLight(19);
-            
-	}
-        HighLight(20);
-        SetlbTrangThai("Hoàn thành mô phỏng", 0);
-    }
-    public int TimViTriOTP(int i, int n, int Frame, int[] a, int[] Frames)
-    {
-        HighLight(23);
-	for (int f = 0; f < Frame; f++)
-	{
-            SetlbTrangThai("Kiểm tra có tồn tại frame trống", 0);
-            HighLight(25);
-            if (Frames[f] == -1)
-            {
-                SwapFrameTimKiem(i,f);
-                SetlbTonTai(f);
-                SetlbTrangThai("Tìm thấy Frame trống", 0);
-                HighLight(26);
-                return f;
-            }
-	}
-        HighLight(28);
-	int value = -1;
-        HighLight(29);
-	int[] m= new int[50];
-        HighLight(30);
-	for (int z = 0; z < 50; z++)
-	{
-            HighLight(32);
-            m[z] = -1;
-	}
-        HighLight(34);
-	for (int t = 0; t < Frame; t++)
-	{
-            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
-            SwapFrame_dt(lbArray_Frame[i+num*(t+1)],i);
-            HighLight(36);
-            int kt = 0;
-            HighLight(37);
-            SetlbTrangThai("Kiểm tra tồn tại của frame ở tương lai", 0);
-            for (int z = i + 1; z < n; z++)
-            {
-                HighLight(39);
-		if (Frames[t] == a[z])
-		{
-                    HighLight(41);
-                    kt = 1;
-                    HighLight(42);
-                    m[z] = frames[t];
-                    HighLight(43);
-                    break;
-		}
-                if(z<n-1)
-                {
-
-                    Move(lbArray_Frame[i+num*(t+1)],1);
-                }
-                
-            }
-            HighLight(46);
-            SetlbTrangThai("Di chuyển frame về trị trí so sánh", 0);
-            if (kt == 0)
-            {
-                Move_back(i);
-                HighLight(47);
-                return t;
-            }
-	}
-        HighLight(49);
-	for (int z = 49; z >= 0; z--)
-	{
-            HighLight(51);
-            if (m[z] != -1)
-            {
-                HighLight(53);
-                value = m[z];
-                HighLight(54);
-		break;
-            }
-	}
-        HighLight(57);
-	for (int z = 0; z < Frame; z++)
-	{
-            HighLight(59);
-            if (value == Frames[z])
-            {
-                LightLabel(lbArray_Frame[i+num*(z+1)],0);
-                HighLight(60);
-                Move_back(i);
-                return z;
-            }
-	}
-        HighLight(62);
-        return -1;
-    }
+    }    
     public void SwapFrame_dt(JLabel lb1, int i)
     {
         curT ++;
@@ -1727,6 +1376,378 @@ public class MainFrame extends JFrame
         });
         threads[cur].start();
     }
+    // Thuật giải FIFO
+    public void FIFO()
+    {   
+        HighLight(1);
+        // gán giá trị frame khởi đầu = -1 tương đương rỗng
+        SetlbTrangThai("khởi tạo fram ban đầu", 0);     
+        for (int i = 0; i < frame; i++)
+        {
+            HighLight(2);
+            frames[i] = -1;
+            SetValue( lbArray_Frame[(i+1)*num], -1 );
+            HighLight(3);
+        }	
+        HighLight(4);	
+	int ViTriThayThe = -1;
+        // khởi tạo vị trí thay thế ban đầu = 0;
+        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
+        SetlbVTTT(ViTriThayThe);
+	for (int i = 0; i < num; i++)
+	{
+            HighLight(5);
+            // gán frame mới bằng frame cũ lbArray_Frame[ 
+            if(i<(num))
+            {
+                for(int k=0;k<frame;k++)
+                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
+            }
+            // gán biến I 
+            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
+            SetlbI(i);
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            HighLight(7);
+            SwapFrame(i,-1);
+            // kiểm tra a[i] đã tồn tại trong frame chưa
+            int TonTai = 0;
+            SetlbTonTai(-2);
+            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
+            int temp = -1;
+            for (int k = 0; k < frame; k++)
+            {
+                HighLight(9);
+                if (frames[k] == array[i])
+                {    
+                    TonTai = 1;
+                    SwapFrameTimKiem(i,k); 
+                    HighLight(10);
+                    SetlbTonTai(k);
+                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
+                    temp=k;
+                    break;
+                }    
+            }
+            if(temp!=-1)
+            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
+            if(TonTai==0)
+            {
+                SwapFrameTimKiem(i,-1);
+                SetlbTonTai(-1);
+            }
+
+            
+            HighLight(12);
+            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
+            if (TonTai == 0) 
+            {
+                
+                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
+                HighLight(14);    
+                // tính lại vị trí thay thế
+                ViTriThayThe = (ViTriThayThe + 1) % frame;
+                SetlbVTTT(ViTriThayThe);
+                // swap frame[ThayThe] = a[i] 
+                HighLight(15); 
+                frames[ViTriThayThe] = array[i];
+                SetlbTrangThai("Thay thế trang ô nhớ", 0);
+                SwapFrameThayThe(i,ViTriThayThe);
+                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
+                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
+                   
+                // đánh dấu lỗi trang tại frame-error[i];
+                SetlbTrangThai("Đánh dấu lỗi trang", 0);
+                HighLight(16);
+                SetFalse(lbArray_Error[i]);
+            }
+            // chuyển frame so sánh về vị trí cũ
+            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
+            HighLight(18);
+            SwapFrame(i,1);
+            
+            PanelMoPhong.repaint();
+            HighLight(19);
+        }
+        HighLight(20);
+        SetlbTrangThai("Hoàn thành mô phỏng", 0);
+    }
+    // Hàm tìm vị trí thay thế OTP
+    public int TimViTriOTP(int i, int n, int Frame, int[] a, int[] Frames)
+    {
+        HighLight(23);
+	for (int f = 0; f < Frame; f++)
+	{
+            SetlbTrangThai("Kiểm tra có tồn tại frame trống", 0);
+            HighLight(25);
+            if (Frames[f] == -1)
+            {
+                SwapFrameTimKiem(i,f);
+                SetlbTonTai(f);
+                SetlbTrangThai("Tìm thấy Frame trống", 0);
+                HighLight(26);
+                return f;
+            }
+	}
+        HighLight(28);
+	int value = -1;
+        HighLight(29);
+	int[] m= new int[50];
+        HighLight(30);
+	for (int z = 0; z < 50; z++)
+	{
+            HighLight(32);
+            m[z] = -1;
+	}
+        HighLight(34);
+	for (int t = 0; t < Frame; t++)
+	{
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            SwapFrame_dt(lbArray_Frame[i+num*(t+1)],i);
+            HighLight(36);
+            int kt = 0;
+            HighLight(37);
+            SetlbTrangThai("Kiểm tra tồn tại của frame ở tương lai", 0);
+            for (int z = i + 1; z < n; z++)
+            {
+                HighLight(39);
+		if (Frames[t] == a[z])
+		{
+                    HighLight(41);
+                    kt = 1;
+                    HighLight(42);
+                    m[z] = frames[t];
+                    HighLight(43);
+                    break;
+		}
+                if(z<n-1)
+                {
+
+                    Move(lbArray_Frame[i+num*(t+1)],1);
+                }
+                
+            }
+            HighLight(46);
+            SetlbTrangThai("Di chuyển frame về trị trí so sánh", 0);
+            if (kt == 0)
+            {
+                Move_back(i);
+                HighLight(47);
+                return t;
+            }
+	}
+        HighLight(49);
+	for (int z = 49; z >= 0; z--)
+	{
+            HighLight(51);
+            if (m[z] != -1)
+            {
+                HighLight(53);
+                value = m[z];
+                HighLight(54);
+		break;
+            }
+	}
+        HighLight(57);
+	for (int z = 0; z < Frame; z++)
+	{
+            HighLight(59);
+            if (value == Frames[z])
+            {
+                LightLabel(lbArray_Frame[i+num*(z+1)],0);
+                HighLight(60);
+                Move_back(i);
+                return z;
+            }
+	}
+        HighLight(62);
+        return -1;
+    }
+    // Thuật giải OPT
+    public void OPT()
+    {
+        HighLight(1);
+        // gán giá trị frame khởi đầu = -1 tương đương rỗng
+        SetlbTrangThai("khởi tạo fram ban đầu", 0);    
+        for (int i = 0; i < frame; i++)
+        {
+            HighLight(2);
+            frames[i] = -1;
+            SetValue( lbArray_Frame[(i+1)*num], -1 );
+            HighLight(3);
+        }
+        HighLight(4);	
+	int ViTriThayThe = -1;
+        // khởi tạo vị trí thay thế ban đầu = 0;
+        SetlbTrangThai("Khởi tạo vị trí thay thế ban đầu = -1", 0);
+        SetlbVTTT(ViTriThayThe);
+	int i, j, available, count = 0;
+	for (i = 0; i < num; i++)
+	{
+            
+            HighLight(5);
+            // gán frame mới bằng frame cũ lbArray_Frame[ 
+            if(i<(num))
+            {
+                for(int k=0;k<frame;k++)
+                    SetValue( lbArray_Frame[(k+1)*num+i], frames[k] );
+            }
+            // gán biến I 
+            SetlbTrangThai("Kiểm tra thực hiện vòng lặp", 0);
+            SetlbI(i);
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            HighLight(7);
+            Setbg(i);
+            SwapFrame(i,-1);
+            // kiểm tra a[i] đã tồn tại trong frame chưa
+            int TonTai = 0;
+            SetlbTonTai(-2);
+            SetlbTrangThai("Kiểm tra a[i] có tồn tại trong frames", 0);
+            int temp = -1;
+            for (int k = 0; k < frame; k++)
+            {
+                HighLight(9);
+                if (frames[k] == array[i])
+                {    
+                    TonTai = 1;
+                    SwapFrameTimKiem(i,k); 
+                    HighLight(10);
+                    SetlbTonTai(k);
+                    LightLabel(lbArray_Frame[i+num*(k+1)], 1);
+                    temp=k;
+                    break;
+                }
+                
+            }
+            if(temp!=-1)
+            LightLabel(lbArray_Frame[i+num*(temp+1)], -1);
+            if(TonTai==0)
+            {
+                SwapFrameTimKiem(i,-1);
+                SetlbTonTai(-1);
+            }
+            
+            HighLight(12);
+            SetlbTrangThai("Nếu a[i] không tồn tại thì thay thế trang", 0);
+            if (TonTai == 0) 
+            {
+                
+                SetlbTrangThai("Tìm, tính vị trí thay thế trang", 0);
+                HighLight(14);    
+                // tính lại vị trí thay thế
+                ViTriThayThe = TimViTriOTP(i, num, frame, array, frames);
+                SetlbVTTT(ViTriThayThe);
+                // swap frame[ThayThe] = a[i] 
+                HighLight(15); 
+                frames[ViTriThayThe] = array[i];
+                SetlbTrangThai("Thay thế trang ô nhớ", 0);
+                SwapFrameThayThe(i,ViTriThayThe);
+                SetValue( lbArray_Frame[(ViTriThayThe+1)*num+i], array[i] );
+                LightLabel(lbArray_Frame[(ViTriThayThe+1)*num+i],0);
+                   
+                // đánh dấu lỗi trang tại frame-error[i];
+                SetlbTrangThai("Đánh dấu lỗi trang", 0);
+                HighLight(16);
+                SetFalse(lbArray_Error[i]);
+            }
+            // chuyển frame so sánh về vị trí cũ
+            SetlbTrangThai("Chuyển frame về vị trí cũ", 0);
+            HighLight(18);
+            SwapFrame(i,1);
+            
+            PanelMoPhong.repaint();
+            HighLight(19);
+            
+	}
+        HighLight(20);
+        SetlbTrangThai("Hoàn thành mô phỏng", 0);
+    }
+    // hàm tiềm vị trí thay thế LRU
+    public int TimViTriLRU(int i, int n, int Frame, int[] a, int[] Frames)
+    {
+        HighLight(23);
+	for (int f = 0; f < Frame; f++)
+	{
+            SetlbTrangThai("Kiểm tra có tồn tại frame trống", 0);
+            HighLight(24);
+            if (Frames[f] == -1)
+            {
+                SwapFrameTimKiem(i,f);
+                SetlbTonTai(f);
+                SetlbTrangThai("Tìm thấy Frame trống", 0);
+                HighLight(25);
+                return f;
+            }
+	}
+        HighLight(26);
+	int value = -1;
+        HighLight(27);
+	int[] m= new int[50];
+        HighLight(28);
+	for (int z = 0; z < 50; z++)
+	{
+            HighLight(29);
+            m[z] = -1;
+	}
+        HighLight(30);
+	for (int t = 0; t < Frame; t++)
+	{
+            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
+            SwapFrame_dt(lbArray_Frame[i+num*(t+1)],i-2);
+            int kt = 0;
+            HighLight(31);
+            SetlbTrangThai("Kiểm tra tồn tại của frame ở quá khứ", 0);
+            for (int z = i -1; z >= 0; z--)
+            {
+                HighLight(32);
+		if (Frames[t] == a[z])
+		{
+                    HighLight(33);
+                    kt = 1;
+                    m[z] = frames[t];
+                    HighLight(43);
+                    break;
+		}
+                if(z>0)
+                {
+
+                    Move(lbArray_Frame[i+num*(t+1)], -1);
+                }
+                
+            }
+            SetlbTrangThai("Di chuyển frame về trị trí so sánh", 0);
+            if (kt == 0)
+            {
+                Move_back(i);
+                HighLight(47);
+                return t;
+            }
+	}
+	for (int z = 0; z<n; z++)
+	{
+            HighLight(35);
+            if (m[z] != -1)
+            {
+                HighLight(36);
+                value = m[z];
+		break;
+            }
+	}
+        HighLight(37);
+	for (int z = 0; z < Frame; z++)
+	{
+            HighLight(38);
+            if (value == Frames[z])
+            {
+                LightLabel(lbArray_Frame[i+num*(z+1)],0);
+                HighLight(39);
+                Move_back(i);
+                return z;
+            }
+	}
+        HighLight(40);
+        return -1;
+    }
+    // Thuật giải LRU
     public void LRU()
     {
         HighLight(1);
@@ -1825,91 +1846,6 @@ public class MainFrame extends JFrame
         HighLight(20);
         SetlbTrangThai("Hoàn thành mô phỏng", 0);
     }
-    public int TimViTriLRU(int i, int n, int Frame, int[] a, int[] Frames)
-    {
-        HighLight(23);
-	for (int f = 0; f < Frame; f++)
-	{
-            SetlbTrangThai("Kiểm tra có tồn tại frame trống", 0);
-            HighLight(24);
-            if (Frames[f] == -1)
-            {
-                SwapFrameTimKiem(i,f);
-                SetlbTonTai(f);
-                SetlbTrangThai("Tìm thấy Frame trống", 0);
-                HighLight(25);
-                return f;
-            }
-	}
-        HighLight(26);
-	int value = -1;
-        HighLight(27);
-	int[] m= new int[50];
-        HighLight(28);
-	for (int z = 0; z < 50; z++)
-	{
-            HighLight(29);
-            m[z] = -1;
-	}
-        HighLight(30);
-	for (int t = 0; t < Frame; t++)
-	{
-            SetlbTrangThai("Chuyển frame ra vị trí so sánh", 0);
-            SwapFrame_dt(lbArray_Frame[i+num*(t+1)],i-2);
-            int kt = 0;
-            HighLight(31);
-            SetlbTrangThai("Kiểm tra tồn tại của frame ở quá khứ", 0);
-            for (int z = i -1; z >= 0; z--)
-            {
-                HighLight(32);
-		if (Frames[t] == a[z])
-		{
-                    HighLight(33);
-                    kt = 1;
-                    m[z] = frames[t];
-                    HighLight(43);
-                    break;
-		}
-                if(z>0)
-                {
 
-                    Move(lbArray_Frame[i+num*(t+1)], -1);
-                }
-                
-            }
-            SetlbTrangThai("Di chuyển frame về trị trí so sánh", 0);
-            if (kt == 0)
-            {
-                Move_back(i);
-                HighLight(47);
-                return t;
-            }
-	}
-	for (int z = 0; z<n; z++)
-	{
-            HighLight(35);
-            if (m[z] != -1)
-            {
-                HighLight(36);
-                value = m[z];
-		break;
-            }
-	}
-        HighLight(37);
-	for (int z = 0; z < Frame; z++)
-	{
-            HighLight(38);
-            if (value == Frames[z])
-            {
-                LightLabel(lbArray_Frame[i+num*(z+1)],0);
-                HighLight(39);
-                Move_back(i);
-                return z;
-            }
-	}
-        HighLight(40);
-        return -1;
-    }
-} 
-
-                
+    
+}
